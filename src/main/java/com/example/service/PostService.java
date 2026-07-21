@@ -112,9 +112,6 @@ public class PostService {
         return postMapper.toResponse(savedPost);
     }
 
-    /**
-     * Lấy chi tiết một bài đăng.
-     */
     @Transactional(readOnly = true)
     public PostResponse getPostById(
         UUID userId,
@@ -128,20 +125,8 @@ public class PostService {
                     "Không tìm thấy bài đăng có id: " + postId
                 )
             );
-
-        /*
-         * Mapper chạy khi transaction vẫn mở nên có thể đọc
-         * các collection LAZY media và targets.
-         */
         return postMapper.toResponse(post);
     }
-
-    /**
-     * Lấy danh sách bài đăng của user.
-     *
-     * Bản này dùng PostMapper thông thường. Nếu DTO summary
-     * cần đếm số target, nên chuyển sang projection/native query.
-     */
     @Transactional(readOnly = true)
     public Page<PostSummaryResponse> getPosts(
         UUID userId,
@@ -158,10 +143,6 @@ public class PostService {
             )
             .map(postMapper::toSummaryResponse);
     }
-
-    /**
-     * Hủy bài đăng.
-     */
     @Transactional
     public PostResponse cancelPost(
         UUID userId,
