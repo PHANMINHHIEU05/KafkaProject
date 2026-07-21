@@ -303,6 +303,7 @@ CREATE TABLE publish_attempt (
 CREATE TABLE outbox_event (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     aggregate_id UUID NOT NULL,
+    aggregate_type VARCHAR(100) NOT NULL,
     event_type VARCHAR(100) NOT NULL,
     topic VARCHAR(255) NOT NULL,
     event_key VARCHAR(255) NOT NULL,

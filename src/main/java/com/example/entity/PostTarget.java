@@ -3,21 +3,25 @@ package com.example.entity;
 import java.time.Instant;
 import java.util.UUID;
 
+import com.example.entity.enums.Platform;
 import com.example.entity.enums.PublishStatus;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,16 +32,17 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class PostTarget {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "post_id" , nullable = false)
     private Post post;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "social_account_id" , nullable = false)
     private SocialAccount socialAccount;
 
@@ -73,5 +78,22 @@ public class PostTarget {
     private Instant createdAt;
     @Column(name = "updated_at" , nullable = false)
     private Instant updatedAt;
-}   
 
+    @PrePersist
+    protected void prePersist() {
+        Instant now = Instant.now();
+        this.createdAt = this.createdAt == null ? now : this.createdAt;
+        this.updatedAt = now;
+        if (this.status == null) {
+            this.status = PublishStatus.PENDING;
+        }
+        if (this.platform == null && this.socialAccount != null) {
+            this.platform = this.socialAccount.getPlatform();
+        }
+    }
+
+    @PreUpdate
+    protected void preUpdate() {
+        this.updatedAt = Instant.now();
+    }
+}   

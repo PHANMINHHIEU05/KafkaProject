@@ -1,6 +1,6 @@
 package com.example.dto;
 
-import com.example.entity.Platform;
+import com.example.entity.enums.Platform;
 import com.example.entity.enums.PublishStatus;
 
 import java.time.Instant;
@@ -22,9 +22,9 @@ public record PostTargetResponse(
 
     String externalPostId,
 
-    String ErrorCode,
+    String errorCode,
 
-    String ErrorMessage,
+    String errorMessage,
 
     Instant processingStartedAt,
 

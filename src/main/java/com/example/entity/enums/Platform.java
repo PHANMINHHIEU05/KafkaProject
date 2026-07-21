@@ -1,6 +1,6 @@
 package com.example.entity.enums;
 
-public enum Platfrom {
+public enum Platform {
     FACEBOOK,
     TIKTOK
 }

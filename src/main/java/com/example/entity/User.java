@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import javax.management.relation.Role;
-
 import com.example.entity.enums.UserStatus;
 
 import jakarta.persistence.CascadeType;
@@ -26,7 +24,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
@@ -39,58 +40,65 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "first_name" , nullable = false)
-    private String first_name;
+    @Column(name = "first_name", nullable = false, length = 100)
+    private String firstName;
 
-    @Column(name = "last_name" , nullable = false)
-    private String last_name;
+    @Column(name = "last_name", nullable = false, length = 100)
+    private String lastName;
 
-    @Column(name = "phone_number" , nullable = false , unique = true , length = 10)
-    private String phone_number;
+    @Column(name = "phone_number", unique = true, length = 20)
+    private String phoneNumber;
 
-    @Column(name = "email" , nullable = false , unique = true , columnDefinition = "CIREXT")
+    @Column(name = "email", nullable = false, unique = true, columnDefinition = "CITEXT")
     private String email;
 
-    @Column(name = "avatar_url" )
-    private String avatar_url;
+    @Column(name = "avatar_url", columnDefinition = "TEXT")
+    private String avatarUrl;
 
-    @Column(name = "password" , nullable = false)
-    private String password;
-
-    @Column(name = "status" , nullable = false)
-    private String status;
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "user_status" , nullable = false)
-    private UserStatus user_status;
+    @Column(name = "status", nullable = false, length = 20)
+    private UserStatus status;
 
-    @Column(name = "created_at" , nullable = false)
-    private Instant created_at;
-    @Column(name = "updated_at" , nullable = false)
-    private Instant updated_at;
-    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL , orphanRemoval = true)
-    private List<SocialAccount> socialAccounts = new ArrayList<>(); 
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Instant createdAt;
+
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SocialAccount> socialAccounts = new ArrayList<>();
 
     @ManyToMany
     @JoinTable (
-        name = "user_roles",
-        joinColumns = @JoinColumn(name = "user_id" , referencedColumnName = "id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id" , referencedColumnName = "id")
+        name = "user_role",
+        joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
     )
     private Set<Role> roles = new HashSet<>();
 
-    
-
     @PrePersist
     void prePersist() {
-        this.created_at = Instant.now();
-        this.updated_at = Instant.now();
-        this.status = "ACTIVE";
+        Instant now = Instant.now();
+        this.createdAt = now;
+        this.updatedAt = now;
+        if (this.status == null) {
+            this.status = UserStatus.ACTIVE;
+        }
     }
 
 
     @PreUpdate
     void preUpdate() {
-        this.updated_at = Instant.now();
+        this.updatedAt = Instant.now();
     }
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
+
+    @OneToMany(mappedBy = "actorUser", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AuditLog> auditLogs = new ArrayList<>();
+
 }

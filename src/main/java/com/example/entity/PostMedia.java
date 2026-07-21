@@ -14,8 +14,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +29,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class PostMedia {
     @Id 
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -55,5 +59,20 @@ public class PostMedia {
     private Instant createdAt;
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
+
+    @PrePersist
+    protected void prePersist() {
+        Instant now = Instant.now();
+        this.createdAt = this.createdAt == null ? now : this.createdAt;
+        this.updatedAt = now;
+        if (this.sortOrder == null) {
+            this.sortOrder = 0;
+        }
+    }
+
+    @PreUpdate
+    protected void preUpdate() {
+        this.updatedAt = Instant.now();
+    }
 
 }

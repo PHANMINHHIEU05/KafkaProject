@@ -1,6 +1,7 @@
 package com.example.dto;
 
-import com.example.entity.Platform;
+
+import com.example.entity.enums.Platform;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

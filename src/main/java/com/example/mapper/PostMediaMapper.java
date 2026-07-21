@@ -11,7 +11,6 @@ import com.example.entity.PostMedia;
 
 @Mapper(config = MapStructConfig.class)
 public interface PostMediaMapper {
-    @Mapping(target = "postId" , source = "post.id")
     PostMediaResponse toResponse(PostMedia postMedia);
     
     

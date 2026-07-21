@@ -18,6 +18,7 @@ public record CreatePostRequest(
     @NotEmpty
     String clientRequestId,
     Instant scheduledAt
+    
 ) {
     
 }

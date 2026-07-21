@@ -9,7 +9,7 @@ CREATE INDEX idx_post_target_platform_status
 
 CREATE INDEX idx_outbox_ready
     ON outbox_event(available_at, created_at)
-    WHERE status IN ('NEW', 'FAILED');
+    WHERE status IN ('NEW', 'RETRY_WAIT');
 
 CREATE INDEX idx_outbox_aggregate
     ON outbox_event(aggregate_type, aggregate_id);

@@ -6,10 +6,14 @@ import org.mapstruct.Mapper;
 
 import com.example.config.MapStructConfig;
 import com.example.dto.CreateSocialAccountRequest;
+import com.example.dto.SocialAccountResponse;
 import com.example.entity.SocialAccount;
 
 @Mapper(config = MapStructConfig.class)
 public interface SocialAccountMapper {
+    @Mapping(target = "userId", source = "user.id")
+    SocialAccountResponse toResponse(SocialAccount socialAccount);
+
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "active", ignore = true)

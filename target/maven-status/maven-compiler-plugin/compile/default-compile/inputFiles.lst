@@ -2,6 +2,7 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/config/MapStructConfig.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/CreatePostMediaRequest.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/CreatePostRequest.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/CreateSocialAccountRequest.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/PostMediaResponse.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/PostResponse.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/PostSummaryResponse.java
@@ -10,7 +11,6 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/SocialAccountResponse.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/AuditLog.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/OutBox.java
-/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/Platform.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/Post.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/PostMedia.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/PostTarget.java
@@ -22,11 +22,22 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/enums/ConnectionStatus.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/enums/MediaType.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/enums/OutboxStatus.java
-/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/enums/Platfrom.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/enums/Platform.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/enums/PostStatus.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/enums/PublishStatus.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/enums/UserStatus.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/exception/AppException.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/exception/BadRequestException.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/exception/ConflictException.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/exception/ErrorCode.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/exception/ErrorResponse.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/exception/GlobalExceptionHandler.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/exception/ResourceNotFoundException.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/PostMapper.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/PostMediaMapper.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/PostTargetMapper.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/PublishAttemptMapper.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/SocialAccountMapper.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/repository/AuditLogRepository.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/repository/OutboxEventRepository.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/repository/PostMediaRepository.java
@@ -35,3 +46,6 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/repository/PublishAttemptRepository.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/repository/SocialAccountRepository.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/repository/UserRepository.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/service/OutboxService.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/service/PostService.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/service/SocialAccountService.java

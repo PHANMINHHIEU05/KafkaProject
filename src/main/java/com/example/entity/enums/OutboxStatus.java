@@ -5,5 +5,5 @@ public enum OutboxStatus {
     PROCESSING,
     RETRY_WAIT,
     PUBLISHED,
-    FAILED
+    DEAD
 }

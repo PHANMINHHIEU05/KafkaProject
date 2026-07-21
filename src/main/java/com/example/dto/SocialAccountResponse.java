@@ -1,7 +1,8 @@
 package com.example.dto;
 
-import com.example.entity.Platform;
+
 import com.example.entity.enums.ConnectionStatus;
+import com.example.entity.enums.Platform;
 
 import java.time.Instant;
 import java.util.UUID;

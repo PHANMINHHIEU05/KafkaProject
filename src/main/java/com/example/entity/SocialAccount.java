@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 import com.example.entity.enums.ConnectionStatus;
+import com.example.entity.enums.Platform;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,6 +17,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.*;
@@ -32,7 +35,7 @@ public class SocialAccount {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY , optional = false)
     @JoinColumn(name = "user_id" , nullable = false)
     private User user;
     @Enumerated(EnumType.STRING)
@@ -45,13 +48,34 @@ public class SocialAccount {
     private String externalAccountId;
     @Column(name = "active" , nullable = false)
     private boolean active;
+
     @Enumerated(EnumType.STRING)
-    @Column(name = "connect_status" , nullable = false)
-    private ConnectionStatus connectStatus;
+    @Column(name = "connection_status" , nullable = false)
+    private ConnectionStatus connectionStatus;
+
     @Column(name = "connected_at" , nullable = false)
     private Instant connectedAt;
+
     @Column(name = "created_at" , nullable = false)
     private Instant createdAt;
+
     @Column(name = "updated_at" , nullable = false)
     private Instant updatedAt;
+
+    @PrePersist
+    protected void prePersist() {
+        Instant now = Instant.now();
+        this.connectedAt = this.connectedAt == null ? now : this.connectedAt;
+        this.createdAt = this.createdAt == null ? now : this.createdAt;
+        this.updatedAt = now;
+        this.active = true;
+        if (this.connectionStatus == null) {
+            this.connectionStatus = ConnectionStatus.CONNECTED;
+        }
+    }
+
+    @PreUpdate
+    protected void preUpdate() {
+        this.updatedAt = Instant.now();
+    }
 }
