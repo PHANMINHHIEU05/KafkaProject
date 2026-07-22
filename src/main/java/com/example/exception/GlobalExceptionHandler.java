@@ -7,10 +7,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.NoHandlerFoundException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.Instant;
 import java.util.LinkedHashMap;
@@ -71,6 +74,36 @@ public class GlobalExceptionHandler {
             HttpStatus.CONFLICT,
             ErrorCode.DATA_INTEGRITY_VIOLATION.getCode(),
             ErrorCode.DATA_INTEGRITY_VIOLATION.getMessage(),
+            request,
+            null
+        );
+    }
+
+    @ExceptionHandler({
+        NoResourceFoundException.class,
+        NoHandlerFoundException.class
+    })
+    public ResponseEntity<ErrorResponse> handleNotFound(Exception ex, HttpServletRequest request) {
+        log.warn("API not found: method={}, path={}", request.getMethod(), request.getRequestURI());
+        return buildErrorResponse(
+            HttpStatus.NOT_FOUND,
+            ErrorCode.API_NOT_FOUND.getCode(),
+            "Không tìm thấy API: " + request.getRequestURI(),
+            request,
+            null
+        );
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadable(
+        HttpMessageNotReadableException ex,
+        HttpServletRequest request
+    ) {
+        log.warn("Invalid JSON request: path={}, message={}", request.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(
+            HttpStatus.BAD_REQUEST,
+            ErrorCode.INVALID_REQUEST.getCode(),
+            "JSON không hợp lệ hoặc sai kiểu dữ liệu. Nếu không hẹn giờ, hãy gửi scheduledAt là null không có dấu ngoặc kép.",
             request,
             null
         );

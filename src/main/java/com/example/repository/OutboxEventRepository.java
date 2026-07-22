@@ -12,39 +12,84 @@ import java.util.List;
 import java.util.UUID;
 
 public interface OutboxEventRepository extends JpaRepository<OutBox, UUID> {
-
     @Query(
         value = """
             SELECT *
             FROM outbox_event
             WHERE status IN ('NEW', 'RETRY_WAIT')
               AND available_at <= CURRENT_TIMESTAMP
-            ORDER BY created_at ASC
+            ORDER BY available_at ASC, created_at ASC
             LIMIT :limit
+            FOR UPDATE SKIP LOCKED
             """,
         nativeQuery = true
     )
-    List<OutBox> findReadyEvents(@Param("limit") int limit);
+    List<OutBox> findReadyEvents(
+        @Param("limit") int limit
+    );
 
-    @Modifying
-    @Query(
-        value = """
-            UPDATE outbox_event
-            SET status = CAST(:status AS varchar),
-                published_at = :publishedAt,
-                error_code = NULL,
-                error_message = NULL
-            WHERE id = :id
-            """,
-        nativeQuery = true
-    )
-    int updatePublished(
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+        UPDATE OutBox o
+        SET o.status = :processingStatus
+        WHERE o.id = :id
+          AND o.status IN (:newStatus, :retryStatus)
+        """)
+    int markProcessing(
         @Param("id") UUID id,
-        @Param("status") String status,
+        @Param("newStatus") OutboxStatus newStatus,
+        @Param("retryStatus") OutboxStatus retryStatus,
+        @Param("processingStatus") OutboxStatus processingStatus
+    );
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+        UPDATE OutBox o
+        SET o.status = :publishedStatus,
+            o.publishedAt = :publishedAt,
+            o.errorCode = NULL,
+            o.errorMessage = NULL
+        WHERE o.id = :id
+        """)
+    int markPublished(
+        @Param("id") UUID id,
+        @Param("publishedStatus") OutboxStatus publishedStatus,
         @Param("publishedAt") Instant publishedAt
     );
 
-    default int markPublished(UUID id) {
-        return updatePublished(id, OutboxStatus.PUBLISHED.name(), Instant.now());
-    }
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+        UPDATE OutBox o
+        SET o.status = :retryStatus,
+            o.retryCount = :retryCount,
+            o.availableAt = :availableAt,
+            o.errorCode = :errorCode,
+            o.errorMessage = :errorMessage
+        WHERE o.id = :id
+        """)
+    int markRetry(
+        @Param("id") UUID id,
+        @Param("retryStatus") OutboxStatus retryStatus,
+        @Param("retryCount") Integer retryCount,
+        @Param("availableAt") Instant availableAt,
+        @Param("errorCode") String errorCode,
+        @Param("errorMessage") String errorMessage
+    );
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("""
+        UPDATE OutBox o
+        SET o.status = :deadStatus,
+            o.retryCount = :retryCount,
+            o.errorCode = :errorCode,
+            o.errorMessage = :errorMessage
+        WHERE o.id = :id
+        """)
+    int markDead(
+        @Param("id") UUID id,
+        @Param("deadStatus") OutboxStatus deadStatus,
+        @Param("retryCount") Integer retryCount,
+        @Param("errorCode") String errorCode,
+        @Param("errorMessage") String errorMessage
+    );
 }

@@ -46,6 +46,12 @@ public enum ErrorCode {
         "Dữ liệu yêu cầu không hợp lệ"
     ),
 
+    API_NOT_FOUND(
+        HttpStatus.NOT_FOUND,
+        "API_NOT_FOUND",
+        "Không tìm thấy API"
+    ),
+
     INTERNAL_SERVER_ERROR(
         HttpStatus.INTERNAL_SERVER_ERROR,
         "INTERNAL_SERVER_ERROR",

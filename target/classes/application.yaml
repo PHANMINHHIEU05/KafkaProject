@@ -1,4 +1,8 @@
 spring:
+  docker:
+    compose:
+      enabled: false
+
   datasource:
     url: jdbc:postgresql://localhost:5432/social_post_db
     username: postgres
@@ -7,17 +11,18 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
-
     open-in-view: false
-
     properties:
       hibernate:
-        "format_sql": true
+        format_sql: true
         jdbc:
-          "time_zone": UTC
+          time_zone: UTC
 
   flyway:
     enabled: true
     locations: classpath:db/migration
     validate-on-migrate: true
     clean-disabled: true
+  app:
+    outbox:
+      publish_delay_ms: 1000

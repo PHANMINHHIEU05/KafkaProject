@@ -1,6 +1,5 @@
 package com.example.service;
 
-
 import com.example.dto.CreatePostMediaRequest;
 import com.example.dto.CreatePostRequest;
 import com.example.dto.PostResponse;
@@ -14,24 +13,25 @@ import com.example.entity.User;
 import com.example.entity.enums.OutboxStatus;
 import com.example.entity.enums.PostStatus;
 import com.example.entity.enums.PublishStatus;
+import com.example.event.PublishMediaEvent;
+import com.example.event.PublishRequestedEvent;
+import com.example.event.PublishTargetEvent;
 import com.example.exception.BadRequestException;
 import com.example.exception.ConflictException;
 import com.example.exception.ErrorCode;
 import com.example.exception.ResourceNotFoundException;
 import com.example.mapper.PostMapper;
 import com.example.mapper.PostMediaMapper;
-import com.example.repository.OutboxEventRepository;
 import com.example.repository.PostRepository;
 import com.example.repository.SocialAccountRepository;
 import com.example.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import tools.jackson.databind.JsonNode;
-import tools.jackson.databind.ObjectMapper;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
 import java.util.LinkedHashSet;
@@ -49,24 +49,17 @@ public class PostService {
     private static final String PUBLISH_REQUEST_EVENT_TYPE =
         "POST_PUBLISH_REQUESTED";
 
-    private static final String CANCEL_REQUEST_EVENT_TYPE =
-        "POST_CANCEL_REQUESTED";
-
     private final UserRepository userRepository;
     private final SocialAccountRepository socialAccountRepository;
     private final PostRepository postRepository;
-    private final OutboxEventRepository outboxEventRepository;
+    private final OutboxService outboxService;
 
     private final PostMapper postMapper;
     private final PostMediaMapper postMediaMapper;
-
     private final ObjectMapper objectMapper;
 
     /**
-     * Tạo bài đăng mới.
-     *
-     * Post, PostMedia, PostTarget và OutboxEvent được lưu
-     * trong cùng một transaction.
+     * Tạo bài đăng và Outbox event trong cùng một transaction.
      */
     @Transactional
     public PostResponse createPost(
@@ -93,25 +86,27 @@ public class PostService {
         );
 
         /*
-         * Vì Post có cascade tới PostMedia và PostTarget,
-         * lưu Post sẽ lưu luôn các entity con.
+         * Post cần cascade PERSIST tới PostMedia và PostTarget.
          */
         Post savedPost = postRepository.save(post);
 
         /*
-         * Có thể gọi flush để chắc chắn Post và PostTarget
-         * đã được INSERT trước khi tạo payload Outbox.
+         * Đẩy INSERT xuống database để phát hiện sớm lỗi
+         * constraint và bảo đảm các entity con đã có ID.
          */
         postRepository.flush();
 
         OutBox outboxEvent =
             buildPublishRequestedEvent(savedPost);
 
-        outboxEventRepository.save(outboxEvent);
+        outboxService.save(outboxEvent);
 
         return postMapper.toResponse(savedPost);
     }
 
+    /**
+     * Lấy chi tiết bài đăng thuộc user.
+     */
     @Transactional(readOnly = true)
     public PostResponse getPostById(
         UUID userId,
@@ -125,8 +120,16 @@ public class PostService {
                     "Không tìm thấy bài đăng có id: " + postId
                 )
             );
+
         return postMapper.toResponse(post);
     }
+
+    /**
+     * Lấy danh sách bài đăng.
+     *
+     * status == null: lấy tất cả bài của user.
+     * status != null: lọc theo trạng thái.
+     */
     @Transactional(readOnly = true)
     public Page<PostSummaryResponse> getPosts(
         UUID userId,
@@ -135,14 +138,24 @@ public class PostService {
     ) {
         getUserOrThrow(userId);
 
-        return postRepository
-            .findAllByUserIdAndStatus(
+        Page<Post> posts;
+
+        if (status == null) {
+            posts = postRepository.findAllByUserId(
+                userId,
+                pageable
+            );
+        } else {
+            posts = postRepository.findAllByUserIdAndStatus(
                 userId,
                 status,
                 pageable
-            )
-            .map(postMapper::toSummaryResponse);
+            );
+        }
+
+        return posts.map(postMapper::toSummaryResponse);
     }
+
     @Transactional
     public PostResponse cancelPost(
         UUID userId,
@@ -159,13 +172,20 @@ public class PostService {
 
         validatePostCanBeCancelled(post);
 
-        boolean hasProcessingTarget = false;
+        boolean hasProcessingTarget = post.getTargets()
+            .stream()
+            .anyMatch(target ->
+                target.getStatus() == PublishStatus.PROCESSING
+            );
+
+        if (hasProcessingTarget) {
+            throw new ConflictException(
+                ErrorCode.INVALID_POST_STATUS,
+                "Không thể hủy vì bài đăng đang được xử lý"
+            );
+        }
 
         for (PostTarget target : post.getTargets()) {
-            if (target.getStatus() == PublishStatus.PROCESSING) {
-                hasProcessingTarget = true;
-            }
-
             if (target.getStatus() == PublishStatus.PENDING) {
                 target.setStatus(PublishStatus.CANCELLED);
             }
@@ -174,26 +194,14 @@ public class PostService {
         post.setStatus(PostStatus.CANCELLED);
 
         /*
-         * Nếu worker có thể đang xử lý target, tạo event hủy
-         * để các worker biết yêu cầu dừng.
-         */
-        if (hasProcessingTarget) {
-            OutBox cancelEvent =
-                buildCancelRequestedEvent(post);
-
-            outboxEventRepository.save(cancelEvent);
-        }
-
-        /*
-         * Không bắt buộc gọi save vì Post đang managed.
-         * Khi transaction commit, Hibernate dirty checking
-         * sẽ tự UPDATE.
+         * Post đang là managed entity nên Hibernate tự update
+         * khi transaction commit.
          */
         return postMapper.toResponse(post);
     }
 
     /**
-     * Tạo Entity Post và các entity con.
+     * Tạo Post cùng PostMedia và PostTarget.
      */
     private Post buildPost(
         User user,
@@ -218,9 +226,8 @@ public class PostService {
     }
 
     /**
-     * Chuyển danh sách CreatePostMediaRequest thành PostMedia.
+     * Chuyển media request thành PostMedia.
      */
-    @SuppressWarnings("unused")
     private void addMedia(
         Post post,
         List<CreatePostMediaRequest> mediaRequests
@@ -234,15 +241,16 @@ public class PostService {
                 postMediaMapper.toEntity(mediaRequest);
 
             /*
-             * addMedia vừa thêm vào list vừa gọi:
-             * media.setPost(post)
+             * addMedia phải đồng thời thực hiện:
+             * post.getMedia().add(media);
+             * media.setPost(post);
              */
             post.addMedia(media);
         }
     }
 
     /**
-     * Mỗi SocialAccount tạo ra một PostTarget.
+     * Mỗi SocialAccount tạo một PostTarget.
      */
     private void addTargets(
         Post post,
@@ -257,16 +265,14 @@ public class PostService {
                 .build();
 
             /*
-             * addTarget vừa thêm vào list vừa gọi:
-             * target.setPost(post)
+             * addTarget phải đồng thời thực hiện:
+             * post.getTargets().add(target);
+             * target.setPost(post);
              */
             post.addTarget(target);
         }
     }
 
-    /**
-     * Kiểm tra user tồn tại.
-     */
     private User getUserOrThrow(UUID userId) {
         return userRepository.findById(userId)
             .orElseThrow(() ->
@@ -278,7 +284,7 @@ public class PostService {
     }
 
     /**
-     * Chống client gửi trùng cùng một yêu cầu tạo bài.
+     * Chống việc client gửi lại cùng một request tạo bài.
      */
     private void validateClientRequestId(
         UUID userId,
@@ -305,7 +311,7 @@ public class PostService {
     }
 
     /**
-     * Loại bỏ ID bị lặp do client gửi lên.
+     * Kiểm tra và loại bỏ socialAccountId bị trùng.
      */
     private List<UUID> normalizeAccountIds(
         List<UUID> socialAccountIds
@@ -333,21 +339,20 @@ public class PostService {
     }
 
     /**
-     * Kiểm tra các SocialAccount:
+     * Kiểm tra các tài khoản:
      * - tồn tại;
-     * - thuộc user hiện tại;
-     * - đang active.
+     * - thuộc user;
+     * - đang có trạng thái hợp lệ để đăng bài.
      */
     private List<SocialAccount> getValidSocialAccounts(
         UUID userId,
         List<UUID> accountIds
     ) {
         List<SocialAccount> accounts =
-            socialAccountRepository
-                .findActiveAccountsByIds(
-                    userId,
-                    accountIds
-                );
+            socialAccountRepository.findActiveAccountsByIds(
+                userId,
+                accountIds
+            );
 
         if (accounts.size() != accountIds.size()) {
             throw new BadRequestException(
@@ -362,10 +367,10 @@ public class PostService {
     }
 
     /**
-     * Không cho lên lịch trong quá khứ.
+     * Không cho đặt lịch trong quá khứ.
      */
     private void validateScheduledAt(Instant scheduledAt) {
-        if (scheduledAt.isBefore(Instant.now())) {
+        if (!scheduledAt.isAfter(Instant.now())) {
             throw new BadRequestException(
                 ErrorCode.INVALID_REQUEST,
                 "Thời gian lên lịch phải lớn hơn thời điểm hiện tại"
@@ -373,23 +378,20 @@ public class PostService {
         }
     }
 
-    /**
-     * Kiểm tra trạng thái Post trước khi hủy.
-     */
     private void validatePostCanBeCancelled(Post post) {
         PostStatus status = post.getStatus();
 
         if (status == PostStatus.PUBLISHED) {
             throw new BadRequestException(
                 ErrorCode.INVALID_POST_STATUS,
-                "Không thể hủy bài đã được đăng thành công"
+                "Không thể hủy bài đã đăng thành công"
             );
         }
 
         if (status == PostStatus.FAILED) {
             throw new BadRequestException(
                 ErrorCode.INVALID_POST_STATUS,
-                "Không thể hủy bài đã thất bại hoàn toàn"
+                "Không thể hủy bài đã thất bại"
             );
         }
 
@@ -402,22 +404,26 @@ public class PostService {
     }
 
     /**
-     * Tạo Outbox event yêu cầu publish Post.
+     * Chuyển Post thành payload Kafka và đóng gói
+     * payload vào một bản ghi Outbox.
      */
     private OutBox buildPublishRequestedEvent(Post post) {
-        PublishRequestedPayload payload =
-            new PublishRequestedPayload(
+        PublishRequestedEvent payload =
+            new PublishRequestedEvent(
                 post.getId(),
                 post.getUser().getId(),
                 post.getTitle(),
                 post.getContent(),
                 post.getScheduledAt(),
+
                 post.getMedia()
                     .stream()
                     .map(media ->
-                        new PublishMediaPayload(
+                        new PublishMediaEvent(
                             media.getId(),
-                            media.getMediaType(),
+                            media.getMediaType() == null
+                                ? null
+                                : media.getMediaType().name(),
                             media.getMediaUrl(),
                             media.getMimeType(),
                             media.getThumbnailUrl(),
@@ -425,10 +431,11 @@ public class PostService {
                         )
                     )
                     .toList(),
+
                 post.getTargets()
                     .stream()
                     .map(target ->
-                        new PublishTargetPayload(
+                        new PublishTargetEvent(
                             target.getId(),
                             target.getSocialAccount().getId(),
                             target.getPlatform(),
@@ -443,6 +450,7 @@ public class PostService {
 
         return OutBox.builder()
             .aggregateId(post.getId())
+            .aggregateType("POST")
             .eventType(PUBLISH_REQUEST_EVENT_TYPE)
             .topic(PUBLISH_REQUEST_TOPIC)
             .eventKey(post.getId().toString())
@@ -456,70 +464,5 @@ public class PostService {
                     : post.getScheduledAt()
             )
             .build();
-    }
-
-    /**
-     * Tạo event yêu cầu hủy.
-     */
-    private OutBox buildCancelRequestedEvent(Post post) {
-        CancelRequestedPayload payload =
-            new CancelRequestedPayload(
-                post.getId(),
-                post.getTargets()
-                    .stream()
-                    .filter(target ->
-                        target.getStatus()
-                            == PublishStatus.PROCESSING
-                    )
-                    .map(PostTarget::getId)
-                    .toList()
-            );
-
-        return OutBox.builder()
-            .aggregateId(post.getId())
-            .eventType(CANCEL_REQUEST_EVENT_TYPE)
-            .topic(PUBLISH_REQUEST_TOPIC)
-            .eventKey(post.getId().toString())
-            .payload(objectMapper.valueToTree(payload))
-            .status(OutboxStatus.NEW)
-            .retryCount(0)
-            .maxRetry(10)
-            .availableAt(Instant.now())
-            .build();
-    }
-
-    private record PublishRequestedPayload(
-        UUID postId,
-        UUID userId,
-        String title,
-        String content,
-        Instant scheduledAt,
-        List<PublishMediaPayload> media,
-        List<PublishTargetPayload> targets
-    ) {
-    }
-
-    private record PublishMediaPayload(
-        UUID mediaId,
-        Object mediaType,
-        String mediaUrl,
-        String mimeType,
-        String thumbnailUrl,
-        Integer sortOrder
-    ) {
-    }
-
-    private record PublishTargetPayload(
-        UUID postTargetId,
-        UUID socialAccountId,
-        Object platform,
-        String idempotencyKey
-    ) {
-    }
-
-    private record CancelRequestedPayload(
-        UUID postId,
-        List<UUID> processingTargetIds
-    ) {
     }
 }

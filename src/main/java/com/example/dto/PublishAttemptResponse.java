@@ -1,9 +1,8 @@
 package com.example.dto;
 
 import java.time.Instant;
-import java.util.UUID;
-
 import com.example.entity.enums.AttemptStatus;
+import java.util.UUID;
 
 public record PublishAttemptResponse (
     Long id,

@@ -65,4 +65,12 @@ public class SocialAccountService {
             .map(socialAccountMapper::toResponse)
             .toList();
     }
+    public void disconnectSocialAccount(UUID userId, UUID accountId) {
+        var socialAccount = socialAccountRepository.findById(accountId)
+            .orElseThrow(() -> new ResourceNotFoundException(
+                ErrorCode.SOCIAL_ACCOUNT_NOT_FOUND,
+                "Social account not found with id: " + accountId
+            ));
+        socialAccountRepository.delete(socialAccount);
+    }
 }

@@ -60,6 +60,17 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
         Pageable pageable
     );
 
+        @Query("""
+        SELECT p
+        FROM Post p
+        WHERE p.user.id = :userId
+        ORDER BY p.createdAt DESC
+    """)
+    Page<Post> findAllByUserId(
+        @Param("userId") UUID userId,
+        Pageable pageable
+    );
+
     @Query("""
         SELECT p
         FROM Post p
