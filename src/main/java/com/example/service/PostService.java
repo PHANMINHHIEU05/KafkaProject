@@ -13,15 +13,16 @@ import com.example.entity.User;
 import com.example.entity.enums.OutboxStatus;
 import com.example.entity.enums.PostStatus;
 import com.example.entity.enums.PublishStatus;
-import com.example.event.PublishMediaEvent;
 import com.example.event.PublishRequestedEvent;
-import com.example.event.PublishTargetEvent;
 import com.example.exception.BadRequestException;
 import com.example.exception.ConflictException;
 import com.example.exception.ErrorCode;
 import com.example.exception.ResourceNotFoundException;
+import com.example.mapper.OutboxMapper;
 import com.example.mapper.PostMapper;
 import com.example.mapper.PostMediaMapper;
+import com.example.mapper.PostTargetMapper;
+import com.example.mapper.PublishEventMapper;
 import com.example.repository.PostRepository;
 import com.example.repository.SocialAccountRepository;
 import com.example.repository.UserRepository;
@@ -56,6 +57,9 @@ public class PostService {
 
     private final PostMapper postMapper;
     private final PostMediaMapper postMediaMapper;
+    private final PostTargetMapper postTargetMapper;
+    private final PublishEventMapper publishEventMapper;
+    private final OutboxMapper outboxMapper;
     private final ObjectMapper objectMapper;
 
     /**
@@ -257,12 +261,7 @@ public class PostService {
         List<SocialAccount> socialAccounts
     ) {
         for (SocialAccount account : socialAccounts) {
-            PostTarget target = PostTarget.builder()
-                .socialAccount(account)
-                .platform(account.getPlatform())
-                .status(PublishStatus.PENDING)
-                .idempotencyKey(UUID.randomUUID().toString())
-                .build();
+            PostTarget target = postTargetMapper.toEntity(account);
 
             /*
              * addTarget phải đồng thời thực hiện:
@@ -409,60 +408,12 @@ public class PostService {
      */
     private OutBox buildPublishRequestedEvent(Post post) {
         PublishRequestedEvent payload =
-            new PublishRequestedEvent(
-                post.getId(),
-                post.getUser().getId(),
-                post.getTitle(),
-                post.getContent(),
-                post.getScheduledAt(),
+            publishEventMapper.toPublishRequestedEvent(post);
 
-                post.getMedia()
-                    .stream()
-                    .map(media ->
-                        new PublishMediaEvent(
-                            media.getId(),
-                            media.getMediaType() == null
-                                ? null
-                                : media.getMediaType().name(),
-                            media.getMediaUrl(),
-                            media.getMimeType(),
-                            media.getThumbnailUrl(),
-                            media.getSortOrder()
-                        )
-                    )
-                    .toList(),
-
-                post.getTargets()
-                    .stream()
-                    .map(target ->
-                        new PublishTargetEvent(
-                            target.getId(),
-                            target.getSocialAccount().getId(),
-                            target.getPlatform(),
-                            target.getIdempotencyKey()
-                        )
-                    )
-                    .toList()
-            );
-
-        JsonNode payloadJson =
-            objectMapper.valueToTree(payload);
-
-        return OutBox.builder()
-            .aggregateId(post.getId())
-            .aggregateType("POST")
-            .eventType(PUBLISH_REQUEST_EVENT_TYPE)
-            .topic(PUBLISH_REQUEST_TOPIC)
-            .eventKey(post.getId().toString())
-            .payload(payloadJson)
-            .status(OutboxStatus.NEW)
-            .retryCount(0)
-            .maxRetry(10)
-            .availableAt(
-                post.getScheduledAt() == null
-                    ? Instant.now()
-                    : post.getScheduledAt()
-            )
-            .build();
+        return outboxMapper.toPublishRequestedOutbox(
+            post,
+            payload,
+            objectMapper
+        );
     }
 }

@@ -1,14 +1,11 @@
 package com.example.service;
 
 import com.example.entity.OutBox;
-import com.example.entity.enums.OutboxStatus;
 import com.example.event.PublishResultEvent;
+import com.example.mapper.OutboxMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.ObjectMapper;
-
-import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
@@ -22,28 +19,15 @@ public class PublishResultOutboxService {
 
     private final OutboxService outboxService;
     private final ObjectMapper objectMapper;
+    private final OutboxMapper outboxMapper;
 
     public OutBox saveResult(
         PublishResultEvent result
     ) {
-        JsonNode payload =
-            objectMapper.valueToTree(result);
-
-        OutBox event = OutBox.builder()
-            /*
-             * aggregate vẫn là Post.
-             */
-            .aggregateId(result.postId())
-            .aggregateType("POST")
-            .eventType(RESULT_EVENT_TYPE)
-            .topic(RESULT_TOPIC)
-            .eventKey(result.postId().toString())
-            .payload(payload)
-            .status(OutboxStatus.NEW)
-            .retryCount(0)
-            .maxRetry(10)
-            .availableAt(Instant.now())
-            .build();
+        OutBox event = outboxMapper.toPublishResultOutbox(
+            result,
+            objectMapper
+        );
 
         return outboxService.save(event);
     }

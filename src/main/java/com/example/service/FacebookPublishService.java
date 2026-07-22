@@ -7,11 +7,10 @@ import com.example.entity.enums.Platform;
 import com.example.event.PublishRequestedEvent;
 import com.example.event.PublishResultEvent;
 import com.example.event.PublishTargetEvent;
+import com.example.mapper.PublishEventMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
 
 @Slf4j
 @Service
@@ -21,6 +20,7 @@ public class FacebookPublishService {
     private final FacebookApiClient facebookApiClient;
     private final PublishAttemptService publishAttemptService;
     private final PublishResultOutboxService resultOutboxService;
+    private final PublishEventMapper publishEventMapper;
 
     public void publish(
         PublishRequestedEvent event,
@@ -51,19 +51,12 @@ public class FacebookPublishService {
             );
 
             PublishResultEvent resultEvent =
-                new PublishResultEvent(
-                    event.postId(),
-                    target.postTargetId(),
-                    attempt.getId(),
+                publishEventMapper.toSuccessResultEvent(
+                    event,
+                    target,
+                    attempt,
                     Platform.FACEBOOK,
-                    true,
-                    apiResult.externalPostId(),
-                    apiResult.externalPostUrl(),
-                    apiResult.httpStatusCode(),
-                    null,
-                    null,
-                    false,
-                    Instant.now()
+                    apiResult
                 );
 
             resultOutboxService.saveResult(resultEvent);
@@ -75,8 +68,7 @@ public class FacebookPublishService {
             );
 
         } catch (Exception exception) {
-            String errorMessage =
-                getErrorMessage(exception);
+            String errorMessage = getErrorMessage(exception);
 
             publishAttemptService.markFailure(
                 attempt.getId(),
@@ -87,43 +79,29 @@ public class FacebookPublishService {
             );
 
             PublishResultEvent resultEvent =
-                new PublishResultEvent(
-                    event.postId(),
-                    target.postTargetId(),
-                    attempt.getId(),
+                publishEventMapper.toFailureResultEvent(
+                    event,
+                    target,
+                    attempt,
                     Platform.FACEBOOK,
-                    false,
-                    null,
-                    null,
-                    null,
                     "FACEBOOK_API_FAILED",
                     errorMessage,
-                    true,
-                    Instant.now()
+                    true
                 );
 
             resultOutboxService.saveResult(resultEvent);
 
-            log.error(
-                "Facebook publish thất bại: postId={}, targetId={}",
-                event.postId(),
-                target.postTargetId(),
-                exception
-            );
+            log.error("Facebook publish thất bại: postId={}, targetId={}", event.postId(), target.postTargetId(), exception);
         }
     }
 
     private String getErrorMessage(
         Exception exception
     ) {
-        if (exception.getMessage() != null
-            && !exception.getMessage().isBlank()) {
-
+        if (exception.getMessage() != null && !exception.getMessage().isBlank()) {
             return exception.getMessage();
         }
 
-        return exception
-            .getClass()
-            .getSimpleName();
+        return exception.getClass().getSimpleName();
     }
 }

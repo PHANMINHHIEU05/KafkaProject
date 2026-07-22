@@ -5,6 +5,7 @@ import com.example.entity.PublishAttempt;
 import com.example.entity.enums.AttemptStatus;
 import com.example.entity.enums.Platform;
 import com.example.entity.enums.PublishStatus;
+import com.example.mapper.PublishAttemptMapper;
 import com.example.repository.PostTargetRepository;
 import com.example.repository.PublishAttemptRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class PublishAttemptService {
 
     private final PublishAttemptRepository publishAttemptRepository;
     private final PostTargetRepository postTargetRepository;
+    private final PublishAttemptMapper publishAttemptMapper;
 
     /**
      * Bắt đầu một lần gọi API ngoài.
@@ -68,14 +70,11 @@ public class PublishAttemptService {
             );
 
         PublishAttempt attempt =
-            PublishAttempt.builder()
-                .postTarget(target)
-                .attemptNumber(lastAttemptNumber + 1)
-                .status(AttemptStatus.PROCESSING)
-                .requestId(UUID.randomUUID().toString())
-                .retryable(false)
-                .startedAt(Instant.now())
-                .build();
+            publishAttemptMapper.toProcessingAttempt(
+                target,
+                lastAttemptNumber + 1,
+                UUID.randomUUID().toString()
+            );
 
         /*
          * Đánh dấu target đang được xử lý.

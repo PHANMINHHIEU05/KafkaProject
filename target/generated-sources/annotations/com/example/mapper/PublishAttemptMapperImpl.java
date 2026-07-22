@@ -4,7 +4,6 @@ import com.example.dto.PublishAttemptResponse;
 import com.example.entity.PostTarget;
 import com.example.entity.PublishAttempt;
 import com.example.entity.enums.AttemptStatus;
-import com.example.entity.enums.PublishAttemptStatus;
 import java.time.Instant;
 import java.util.UUID;
 import javax.annotation.processing.Generated;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-22T08:20:40+0700",
+    date = "2026-07-22T09:44:45+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.11 (Red Hat, Inc.)"
 )
 @Component
@@ -25,9 +24,10 @@ public class PublishAttemptMapperImpl implements PublishAttemptMapper {
         }
 
         UUID postTargetId = null;
-        UUID id = null;
+        Long id = null;
         Integer attemptNumber = null;
         AttemptStatus status = null;
+        String requestId = null;
         Integer httpStatusCode = null;
         boolean retryable = false;
         String errorCode = null;
@@ -38,7 +38,8 @@ public class PublishAttemptMapperImpl implements PublishAttemptMapper {
         postTargetId = entityPostTargetId( entity );
         id = entity.getId();
         attemptNumber = entity.getAttemptNumber();
-        status = publishAttemptStatusToAttemptStatus( entity.getStatus() );
+        status = entity.getStatus();
+        requestId = entity.getRequestId();
         httpStatusCode = entity.getHttpStatusCode();
         if ( entity.getRetryable() != null ) {
             retryable = entity.getRetryable();
@@ -48,11 +49,27 @@ public class PublishAttemptMapperImpl implements PublishAttemptMapper {
         startedAt = entity.getStartedAt();
         finishedAt = entity.getFinishedAt();
 
-        String requestId = null;
-
         PublishAttemptResponse publishAttemptResponse = new PublishAttemptResponse( id, postTargetId, attemptNumber, status, requestId, httpStatusCode, retryable, errorCode, errorMessage, startedAt, finishedAt );
 
         return publishAttemptResponse;
+    }
+
+    @Override
+    public PublishAttempt toProcessingAttempt(PostTarget postTarget, Integer attemptNumber, String requestId) {
+        if ( postTarget == null && attemptNumber == null && requestId == null ) {
+            return null;
+        }
+
+        PublishAttempt.PublishAttemptBuilder publishAttempt = PublishAttempt.builder();
+
+        publishAttempt.postTarget( postTarget );
+        publishAttempt.attemptNumber( attemptNumber );
+        publishAttempt.requestId( requestId );
+        publishAttempt.status( com.example.entity.enums.AttemptStatus.PROCESSING );
+        publishAttempt.retryable( false );
+        publishAttempt.startedAt( java.time.Instant.now() );
+
+        return publishAttempt.build();
     }
 
     private UUID entityPostTargetId(PublishAttempt publishAttempt) {
@@ -68,25 +85,5 @@ public class PublishAttemptMapperImpl implements PublishAttemptMapper {
             return null;
         }
         return id;
-    }
-
-    protected AttemptStatus publishAttemptStatusToAttemptStatus(PublishAttemptStatus publishAttemptStatus) {
-        if ( publishAttemptStatus == null ) {
-            return null;
-        }
-
-        AttemptStatus attemptStatus;
-
-        switch ( publishAttemptStatus ) {
-            case PROCESSING: attemptStatus = AttemptStatus.PROCESSING;
-            break;
-            case SUCCESS: attemptStatus = AttemptStatus.SUCCESS;
-            break;
-            case FAILED: attemptStatus = AttemptStatus.FAILED;
-            break;
-            default: throw new IllegalArgumentException( "Unexpected enum constant: " + publishAttemptStatus );
-        }
-
-        return attemptStatus;
     }
 }

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-22T08:20:40+0700",
+    date = "2026-07-22T09:44:45+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.11 (Red Hat, Inc.)"
 )
 @Component
@@ -52,6 +52,23 @@ public class PostTargetMapperImpl implements PostTargetMapper {
         PostTargetResponse postTargetResponse = new PostTargetResponse( id, postId, socialAccountId, accountName, platform, status, externalPostId, errorCode, errorMessage, processingStartedAt, publishedAt );
 
         return postTargetResponse;
+    }
+
+    @Override
+    public PostTarget toEntity(SocialAccount socialAccount) {
+        if ( socialAccount == null ) {
+            return null;
+        }
+
+        PostTarget.PostTargetBuilder postTarget = PostTarget.builder();
+
+        postTarget.socialAccount( socialAccount );
+        postTarget.platform( socialAccount.getPlatform() );
+
+        postTarget.status( com.example.entity.enums.PublishStatus.PENDING );
+        postTarget.idempotencyKey( java.util.UUID.randomUUID().toString() );
+
+        return postTarget.build();
     }
 
     private UUID postTargetPostId(PostTarget postTarget) {

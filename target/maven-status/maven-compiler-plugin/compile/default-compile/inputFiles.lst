@@ -43,10 +43,12 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/exception/ErrorResponse.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/exception/GlobalExceptionHandler.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/exception/ResourceNotFoundException.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/OutboxMapper.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/PostMapper.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/PostMediaMapper.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/PostTargetMapper.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/PublishAttemptMapper.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/PublishEventMapper.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/SocialAccountMapper.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/messaging/consumer/FacebookPublishConsumer.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/messaging/consumer/PublishResultConsumer.java

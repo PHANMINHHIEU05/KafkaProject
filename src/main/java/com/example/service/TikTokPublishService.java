@@ -7,11 +7,10 @@ import com.example.entity.enums.Platform;
 import com.example.event.PublishRequestedEvent;
 import com.example.event.PublishResultEvent;
 import com.example.event.PublishTargetEvent;
+import com.example.mapper.PublishEventMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
 
 @Slf4j
 @Service
@@ -21,6 +20,7 @@ public class TikTokPublishService {
     private final TikTokApiClient tikTokApiClient;
     private final PublishAttemptService publishAttemptService;
     private final PublishResultOutboxService resultOutboxService;
+    private final PublishEventMapper publishEventMapper;
 
     public void publish(
         PublishRequestedEvent event,
@@ -51,19 +51,12 @@ public class TikTokPublishService {
             );
 
             PublishResultEvent resultEvent =
-                new PublishResultEvent(
-                    event.postId(),
-                    target.postTargetId(),
-                    attempt.getId(),
+                publishEventMapper.toSuccessResultEvent(
+                    event,
+                    target,
+                    attempt,
                     Platform.TIKTOK,
-                    true,
-                    apiResult.externalPostId(),
-                    apiResult.externalPostUrl(),
-                    apiResult.httpStatusCode(),
-                    null,
-                    null,
-                    false,
-                    Instant.now()
+                    apiResult
                 );
 
             resultOutboxService.saveResult(resultEvent);
@@ -87,19 +80,14 @@ public class TikTokPublishService {
             );
 
             PublishResultEvent resultEvent =
-                new PublishResultEvent(
-                    event.postId(),
-                    target.postTargetId(),
-                    attempt.getId(),
+                publishEventMapper.toFailureResultEvent(
+                    event,
+                    target,
+                    attempt,
                     Platform.TIKTOK,
-                    false,
-                    null,
-                    null,
-                    null,
                     "TIKTOK_API_FAILED",
                     errorMessage,
-                    true,
-                    Instant.now()
+                    true
                 );
 
             resultOutboxService.saveResult(resultEvent);
