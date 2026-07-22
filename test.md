@@ -468,6 +468,59 @@ Neu outbox co `available_at` trong tuong lai, do bai dang la bai hen gio. Muon t
 "scheduledAt": null
 ```
 
+### Target van PENDING du outbox da PUBLISHED
+
+Neu DB co dang:
+
+```text
+outbox_event.status = PUBLISHED
+post_target.status = PENDING
+publish_attempt khong co dong nao
+```
+
+thi producer da gui message vao Kafka, nhung consumer group chua xu ly. Kiem tra Kafka log neu thay:
+
+```text
+__consumer_offsets
+INVALID_REPLICATION_FACTOR
+target replication factor of 3 cannot be reached because only 1 broker
+```
+
+nghia la Kafka single-broker dang thieu config internal topic. File `compose.yaml` da co config dung:
+
+```yaml
+KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+```
+
+Nhung neu container Kafka da tao truoc do, `docker start` se khong cap nhat env moi. Can recreate Kafka container:
+
+```bash
+docker compose stop kafka
+docker compose rm -f kafka
+docker compose up -d kafka
+```
+
+Sau do restart app:
+
+```bash
+mvn spring-boot:run
+```
+
+Tao post moi voi `scheduledAt: null`, hoac reset outbox cu:
+
+```sql
+UPDATE outbox_event
+SET status = 'NEW',
+    available_at = CURRENT_TIMESTAMP,
+    published_at = NULL,
+    error_code = NULL,
+    error_message = NULL
+WHERE aggregate_id = 'POST_ID_CUA_BAN'
+  AND event_type = 'POST_PUBLISH_REQUESTED';
+```
+
 ## 13. Thu Tu Test Nen Chay
 
 1. `docker compose up -d`

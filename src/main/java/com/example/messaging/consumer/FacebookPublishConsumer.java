@@ -46,13 +46,12 @@ public class FacebookPublishConsumer {
                 facebookPublishService.publish(event, target)
             );
     }
-
     private PublishRequestedEvent readEvent(String message) {
         try {
             return objectMapper.readValue(message, PublishRequestedEvent.class);
         } catch (Exception exception) {
             log.error("Facebook consumer không đọc được message: {}", message, exception);
             return null;
-        }
+        }             
     }
 }
