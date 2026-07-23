@@ -1,6 +1,5 @@
 package com.example.controller;
 
-import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,27 +30,27 @@ import lombok.RequiredArgsConstructor;
 public class PostController {
     private final PostService postService;
     @PostMapping
-    public ResponseEntity<PostResponse> createPost(@RequestHeader("x-user-id") UUID userId, @Valid @RequestBody CreatePostRequest request) {
+    public ResponseEntity<PostResponse> createPost(@RequestHeader("x-user-id") Integer userId, @Valid @RequestBody CreatePostRequest request) {
         PostResponse response = postService.createPost(userId, request);
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<PostResponse> getPostById(@RequestHeader("x-user-id")UUID userId , @PathVariable("postId") UUID postId) {
+    public ResponseEntity<PostResponse> getPostById(@RequestHeader("x-user-id")Integer userId , @PathVariable("postId") Long postId) {
         PostResponse response = postService.getPostById(userId, postId);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
     @GetMapping()
-    public ResponseEntity<Page<PostSummaryResponse>> getPosts(@RequestHeader("x-user-id") UUID userId , @RequestParam(required = false) PostStatus status , @RequestParam(required = false , defaultValue = "0") int page  , @RequestParam(required = false , defaultValue = "10") int size) {
+    public ResponseEntity<Page<PostSummaryResponse>> getPosts(@RequestHeader("x-user-id") Integer userId , @RequestParam(required = false) PostStatus status , @RequestParam(required = false , defaultValue = "0") int page  , @RequestParam(required = false , defaultValue = "10") int size) {
         var response = postService.getPosts(userId, status,PageRequest.of(page, size));
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
      @PatchMapping("/{postId}/cancel")
     public ResponseEntity<PostResponse> cancelPost(
-        @RequestHeader("X-User-Id") UUID userId,
-        @PathVariable UUID postId
+        @RequestHeader("X-User-Id") Integer userId,
+        @PathVariable Long postId
     ) {
         return ResponseEntity.ok(
             postService.cancelPost(userId, postId)

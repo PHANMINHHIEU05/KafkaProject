@@ -38,7 +38,6 @@ import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -67,7 +66,7 @@ public class PostService {
      */
     @Transactional
     public PostResponse createPost(
-        UUID userId,
+        Integer userId,
         CreatePostRequest request
     ) {
         User user = getUserOrThrow(userId);
@@ -77,7 +76,7 @@ public class PostService {
             request.clientRequestId()
         );
 
-        List<UUID> accountIds =
+        List<Integer> accountIds =
             normalizeAccountIds(request.socialAccountIds());
 
         List<SocialAccount> socialAccounts =
@@ -113,8 +112,8 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public PostResponse getPostById(
-        UUID userId,
-        UUID postId
+        Integer userId,
+        Long postId
     ) {
         Post post = postRepository
             .findByIdAndUserId(postId, userId)
@@ -136,7 +135,7 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public Page<PostSummaryResponse> getPosts(
-        UUID userId,
+        Integer userId,
         PostStatus status,
         Pageable pageable
     ) {
@@ -162,8 +161,8 @@ public class PostService {
 
     @Transactional
     public PostResponse cancelPost(
-        UUID userId,
-        UUID postId
+        Integer userId,
+        Long postId
     ) {
         Post post = postRepository
             .findByIdAndUserId(postId, userId)
@@ -272,7 +271,7 @@ public class PostService {
         }
     }
 
-    private User getUserOrThrow(UUID userId) {
+    private User getUserOrThrow(Integer userId) {
         return userRepository.findById(userId)
             .orElseThrow(() ->
                 new ResourceNotFoundException(
@@ -286,7 +285,7 @@ public class PostService {
      * Chống việc client gửi lại cùng một request tạo bài.
      */
     private void validateClientRequestId(
-        UUID userId,
+        Integer userId,
         String clientRequestId
     ) {
         if (clientRequestId == null
@@ -312,8 +311,8 @@ public class PostService {
     /**
      * Kiểm tra và loại bỏ socialAccountId bị trùng.
      */
-    private List<UUID> normalizeAccountIds(
-        List<UUID> socialAccountIds
+    private List<Integer> normalizeAccountIds(
+        List<Integer> socialAccountIds
     ) {
         if (socialAccountIds == null
             || socialAccountIds.isEmpty()) {
@@ -331,7 +330,7 @@ public class PostService {
             );
         }
 
-        Set<UUID> uniqueIds =
+        Set<Integer> uniqueIds =
             new LinkedHashSet<>(socialAccountIds);
 
         return List.copyOf(uniqueIds);
@@ -344,8 +343,8 @@ public class PostService {
      * - đang có trạng thái hợp lệ để đăng bài.
      */
     private List<SocialAccount> getValidSocialAccounts(
-        UUID userId,
-        List<UUID> accountIds
+        Integer userId,
+        List<Integer> accountIds
     ) {
         List<SocialAccount> accounts =
             socialAccountRepository.findActiveAccountsByIds(

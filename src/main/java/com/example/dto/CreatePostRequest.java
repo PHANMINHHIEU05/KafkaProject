@@ -3,7 +3,6 @@ package com.example.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import java.util.UUID;
 import java.time.Instant;
 import java.util.List;
 public record CreatePostRequest(
@@ -13,7 +12,7 @@ public record CreatePostRequest(
     @NotBlank(message = "Nội dung không được để trống")
     String content,
     @NotEmpty(message = "Danh sách media không được để trống")
-    List<UUID> socialAccountIds,
+    List<Integer> socialAccountIds,
     List<CreatePostMediaRequest> mediaList,
     @NotEmpty
     String clientRequestId,

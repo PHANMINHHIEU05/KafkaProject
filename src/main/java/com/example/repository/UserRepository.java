@@ -1,7 +1,6 @@
 package com.example.repository;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.example.entity.User;
 
-public interface UserRepository  extends JpaRepository<User, UUID> {
+public interface UserRepository  extends JpaRepository<User, Integer> {
     @Query(
         value = """
             SELECT *
@@ -18,7 +17,7 @@ public interface UserRepository  extends JpaRepository<User, UUID> {
             """,
         nativeQuery = true
     )
-    Optional<User> findById(@Param("userId") UUID userId);
+    Optional<User> findById(@Param("userId") Integer userId);
 
     @Query(
         value = """

@@ -1,7 +1,6 @@
 package com.example.entity;
 
 import java.time.Instant;
-import java.util.UUID;
 
 import com.example.entity.enums.ConnectionStatus;
 import com.example.entity.enums.Platform;
@@ -32,8 +31,12 @@ import lombok.*;
 @Builder
 public class SocialAccount {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int  id;
+
+    @ManyToOne(fetch = FetchType.LAZY , optional = false)
+    @JoinColumn(name = "organization_id" , nullable = false)
+    private Organization organization;
 
     @ManyToOne(fetch = FetchType.LAZY , optional = false)
     @JoinColumn(name = "user_id" , nullable = false)
@@ -46,6 +49,8 @@ public class SocialAccount {
     private String accountName;
     @Column(name = "external_account_id" , nullable = false)
     private String externalAccountId;
+    @Column(name = "avatar_url", columnDefinition = "TEXT")
+    private String avatarUrl;
     @Column(name = "active" , nullable = false)
     private boolean active;
 
@@ -61,6 +66,15 @@ public class SocialAccount {
 
     @Column(name = "updated_at" , nullable = false)
     private Instant updatedAt;
+
+    @Column(name = "access_token_encrypted"  , columnDefinition = "TEXT")
+    private String accessTokenEncrypted;
+    @Column(name = "refresh_token_encrypted" , columnDefinition = "TEXT")
+    private String refreshTokenEncrypted;
+    @Column(name = "token_expires_at")
+    private Instant tokenExpiresAt;
+    @Column(name = "last_synced_at")
+    private Instant lastSyncedAt;
 
     @PrePersist
     protected void prePersist() {

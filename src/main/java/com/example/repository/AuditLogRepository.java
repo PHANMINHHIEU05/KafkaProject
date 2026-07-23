@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
 
@@ -19,7 +18,7 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
             """,
         nativeQuery = true
     )
-    List<AuditLog> findAllByActorUserId(@Param("actorUserId") UUID actorUserId);
+    List<AuditLog> findAllByActorUserId(@Param("actorUserId") Integer actorUserId);
 
     @Query(
         value = """
@@ -32,6 +31,6 @@ public interface AuditLogRepository extends JpaRepository<AuditLog, Long> {
     )
     List<AuditLog> findAllByTarget(
         @Param("targetType") String targetType,
-        @Param("targetId") UUID targetId
+        @Param("targetId") Long targetId
     );
 }

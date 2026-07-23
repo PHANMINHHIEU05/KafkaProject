@@ -13,14 +13,13 @@ import com.example.entity.enums.PostStatus;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import javax.annotation.processing.Generated;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-22T09:44:45+0700",
+    date = "2026-07-23T22:58:52+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.11 (Red Hat, Inc.)"
 )
 @Component
@@ -53,8 +52,8 @@ public class PostMapperImpl implements PostMapper {
             return null;
         }
 
-        UUID userId = null;
-        UUID id = null;
+        Integer userId = null;
+        Long id = null;
         String title = null;
         String content = null;
         PostStatus status = null;
@@ -90,7 +89,7 @@ public class PostMapperImpl implements PostMapper {
             return null;
         }
 
-        UUID id = null;
+        Long id = null;
         String title = null;
         String content = null;
         PostStatus status = null;
@@ -129,7 +128,7 @@ public class PostMapperImpl implements PostMapper {
         post.setScheduledAt( request.scheduledAt() );
     }
 
-    private UUID postUserId(Post post) {
+    private Integer postUserId(Post post) {
         if ( post == null ) {
             return null;
         }
@@ -137,10 +136,7 @@ public class PostMapperImpl implements PostMapper {
         if ( user == null ) {
             return null;
         }
-        UUID id = user.getId();
-        if ( id == null ) {
-            return null;
-        }
+        int id = user.getId();
         return id;
     }
 

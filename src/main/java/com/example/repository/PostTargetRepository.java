@@ -9,9 +9,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
-public interface PostTargetRepository extends JpaRepository<PostTarget, UUID> {
+public interface PostTargetRepository extends JpaRepository<PostTarget, Long> {
 
     @Query(
         value = """
@@ -22,7 +21,7 @@ public interface PostTargetRepository extends JpaRepository<PostTarget, UUID> {
             """,
         nativeQuery = true
     )
-    List<PostTarget> findAllByPostId(@Param("postId") UUID postId);
+    List<PostTarget> findAllByPostId(@Param("postId") Long postId);
 
     @Query(
         value = """

@@ -4,13 +4,12 @@ import com.example.entity.enums.PostStatus;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 public record PostResponse(
 
-    UUID id,
+    Long id,
 
-    UUID userId,
+    Integer userId,
 
     String title,
 

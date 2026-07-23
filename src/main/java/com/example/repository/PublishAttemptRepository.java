@@ -7,7 +7,6 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public interface PublishAttemptRepository extends JpaRepository<PublishAttempt, Long> {
 
@@ -20,7 +19,7 @@ public interface PublishAttemptRepository extends JpaRepository<PublishAttempt, 
             """,
         nativeQuery = true
     )
-    List<PublishAttempt> findAllByPostTargetId(@Param("postTargetId") UUID postTargetId);
+    List<PublishAttempt> findAllByPostTargetId(@Param("postTargetId") Long postTargetId);
 
     @Query(
         value = """
@@ -30,14 +29,14 @@ public interface PublishAttemptRepository extends JpaRepository<PublishAttempt, 
             """,
         nativeQuery = true
     )
-    int nextAttemptNumber(@Param("postTargetId") UUID postTargetId);
+    int nextAttemptNumber(@Param("postTargetId") Long postTargetId);
     @Query("""
         SELECT COALESCE(MAX(a.attemptNumber), 0)
         FROM PublishAttempt a
         WHERE a.postTarget.id = :postTargetId
         """)
     int findMaxAttemptNumber(
-        @Param("postTargetId") UUID postTargetId
+        @Param("postTargetId") Long postTargetId
     );
     @Query("""
         SELECT a

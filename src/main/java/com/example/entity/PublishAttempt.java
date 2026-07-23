@@ -58,6 +58,9 @@ public class PublishAttempt {
     )
     private String requestId;
 
+    @Column(name = "provider_request_id")
+    private String providerRequestId;
+
     @Column(name = "http_status_code")
     private Integer httpStatusCode;
 

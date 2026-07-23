@@ -4,15 +4,14 @@ import com.example.entity.enums.Platform;
 import com.example.entity.enums.PublishStatus;
 
 import java.time.Instant;
-import java.util.UUID;
 
 public record PostTargetResponse(
 
-    UUID id,
+    Long id,
 
-    UUID postId,
+    Long postId,
 
-    UUID socialAccountId,
+    Integer socialAccountId,
 
     String accountName,
 

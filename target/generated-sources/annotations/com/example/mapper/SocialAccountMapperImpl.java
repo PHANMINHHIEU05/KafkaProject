@@ -7,13 +7,12 @@ import com.example.entity.User;
 import com.example.entity.enums.ConnectionStatus;
 import com.example.entity.enums.Platform;
 import java.time.Instant;
-import java.util.UUID;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-22T09:44:45+0700",
+    date = "2026-07-23T22:58:52+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.11 (Red Hat, Inc.)"
 )
 @Component
@@ -25,8 +24,8 @@ public class SocialAccountMapperImpl implements SocialAccountMapper {
             return null;
         }
 
-        UUID userId = null;
-        UUID id = null;
+        Integer userId = null;
+        Integer id = null;
         Platform platform = null;
         String externalAccountId = null;
         String accountName = null;
@@ -78,7 +77,7 @@ public class SocialAccountMapperImpl implements SocialAccountMapper {
         entity.setExternalAccountId( request.externalAccountId() );
     }
 
-    private UUID socialAccountUserId(SocialAccount socialAccount) {
+    private Integer socialAccountUserId(SocialAccount socialAccount) {
         if ( socialAccount == null ) {
             return null;
         }
@@ -86,10 +85,7 @@ public class SocialAccountMapperImpl implements SocialAccountMapper {
         if ( user == null ) {
             return null;
         }
-        UUID id = user.getId();
-        if ( id == null ) {
-            return null;
-        }
+        int id = user.getId();
         return id;
     }
 }

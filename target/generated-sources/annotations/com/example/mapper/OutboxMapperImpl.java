@@ -10,7 +10,7 @@ import tools.jackson.databind.ObjectMapper;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-22T09:44:45+0700",
+    date = "2026-07-23T22:58:52+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.11 (Red Hat, Inc.)"
 )
 @Component
@@ -26,6 +26,8 @@ public class OutboxMapperImpl implements OutboxMapper {
 
         if ( post != null ) {
             outBox.aggregateId( post.getId() );
+            outBox.organization( post.getOrganization() );
+            outBox.updatedAt( post.getUpdatedAt() );
         }
         outBox.aggregateType( "POST" );
         outBox.eventType( "POST_PUBLISH_REQUESTED" );

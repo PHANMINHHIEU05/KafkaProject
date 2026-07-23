@@ -9,9 +9,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
-public interface OutboxEventRepository extends JpaRepository<OutBox, UUID> {
+public interface OutboxEventRepository extends JpaRepository<OutBox, Long> {
     @Query(
         value = """
             SELECT *
@@ -36,7 +35,7 @@ public interface OutboxEventRepository extends JpaRepository<OutBox, UUID> {
           AND o.status IN (:newStatus, :retryStatus)
         """)
     int markProcessing(
-        @Param("id") UUID id,
+        @Param("id") Long id,
         @Param("newStatus") OutboxStatus newStatus,
         @Param("retryStatus") OutboxStatus retryStatus,
         @Param("processingStatus") OutboxStatus processingStatus
@@ -52,7 +51,7 @@ public interface OutboxEventRepository extends JpaRepository<OutBox, UUID> {
         WHERE o.id = :id
         """)
     int markPublished(
-        @Param("id") UUID id,
+        @Param("id") Long id,
         @Param("publishedStatus") OutboxStatus publishedStatus,
         @Param("publishedAt") Instant publishedAt
     );
@@ -68,7 +67,7 @@ public interface OutboxEventRepository extends JpaRepository<OutBox, UUID> {
         WHERE o.id = :id
         """)
     int markRetry(
-        @Param("id") UUID id,
+        @Param("id") Long id,
         @Param("retryStatus") OutboxStatus retryStatus,
         @Param("retryCount") Integer retryCount,
         @Param("availableAt") Instant availableAt,
@@ -86,7 +85,7 @@ public interface OutboxEventRepository extends JpaRepository<OutBox, UUID> {
         WHERE o.id = :id
         """)
     int markDead(
-        @Param("id") UUID id,
+        @Param("id") Long id,
         @Param("deadStatus") OutboxStatus deadStatus,
         @Param("retryCount") Integer retryCount,
         @Param("errorCode") String errorCode,

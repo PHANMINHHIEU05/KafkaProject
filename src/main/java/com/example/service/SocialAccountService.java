@@ -13,7 +13,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class SocialAccountService {
@@ -34,7 +33,7 @@ public class SocialAccountService {
 
     @Transactional
     public SocialAccountResponse createSocialAccount(
-        UUID userId,
+        Integer userId,
         CreateSocialAccountRequest request
     ) {
         var user = userRepository.findById(userId)
@@ -48,8 +47,11 @@ public class SocialAccountService {
             request.externalAccountId()
         )) {
             throw new ConflictException(
-                ErrorCode.DATA_INTEGRITY_VIOLATION,
-                "Social account already exists for platform: " + request.platform()
+                ErrorCode.DUPLICATE_SOCIAL_ACCOUNT,
+                "Social account already exists for platform: "
+                    + request.platform()
+                    + ", externalAccountId: "
+                    + request.externalAccountId()
             );
         }
 
@@ -59,13 +61,13 @@ public class SocialAccountService {
         return socialAccountMapper.toResponse(socialAccountRepository.save(socialAccount));
     }
 
-    public List<SocialAccountResponse> findActiveAccounts(UUID userId) {
+    public List<SocialAccountResponse> findActiveAccounts(Integer userId) {
         return socialAccountRepository.findActiveAccountsByUserId(userId)
             .stream()
             .map(socialAccountMapper::toResponse)
             .toList();
     }
-    public void disconnectSocialAccount(UUID userId, UUID accountId) {
+    public void disconnectSocialAccount(Integer userId, Integer accountId) {
         var socialAccount = socialAccountRepository.findById(accountId)
             .orElseThrow(() -> new ResourceNotFoundException(
                 ErrorCode.SOCIAL_ACCOUNT_NOT_FOUND,

@@ -1,7 +1,6 @@
 package com.example.controller;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -28,7 +27,7 @@ public class SocialAccountController {
     
     @PostMapping
     public ResponseEntity<SocialAccountResponse> createSocialAccount(
-        @RequestHeader("x-user-id") UUID  userId,
+        @RequestHeader("x-user-id") Integer userId,
         @RequestBody CreateSocialAccountRequest request
     ) {
         SocialAccountResponse response = socialAccountService.createSocialAccount(userId, request);
@@ -37,15 +36,15 @@ public class SocialAccountController {
 
     @GetMapping
     public ResponseEntity<List<SocialAccountResponse>> getSocialAccounts(
-        @RequestHeader("x-user-id") UUID userId
+        @RequestHeader("x-user-id") Integer userId
     ) {
         var response = socialAccountService.findActiveAccounts(userId);
         return ResponseEntity.ok(response);
     }
     @PatchMapping
     public ResponseEntity<Void> disconnectSocialAccounts(
-        @RequestHeader("x-user-id") UUID userId,
-        @RequestParam UUID accountIds
+        @RequestHeader("x-user-id") Integer userId,
+        @RequestParam Integer accountIds
     ) {
         socialAccountService.disconnectSocialAccount(userId, accountIds);
         return ResponseEntity.ok().build();

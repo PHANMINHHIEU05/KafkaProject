@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +27,7 @@ public class OutboxService {
     }
 
     @Transactional
-    public void markProcessing(UUID id) {
+    public void markProcessing(Long id) {
         int updatedRows = outboxEventRepository.markProcessing(
             id,
             OutboxStatus.NEW,
@@ -55,7 +54,7 @@ public class OutboxService {
     }
 
     @Transactional
-    public void markPublished(UUID id) {
+    public void markPublished(Long id) {
         int updatedRows = outboxEventRepository.markPublished(
             id,
             OutboxStatus.PUBLISHED,
@@ -71,7 +70,7 @@ public class OutboxService {
 
     @Transactional
     public void markFailed(
-        UUID id,
+        Long id,
         String errorCode,
         String errorMessage
     ) {
@@ -116,7 +115,7 @@ public class OutboxService {
 
         return Instant.now().plusSeconds(delaySeconds);
     }
-    private OutBox findByIdOrThrow(UUID eventId) {
+    private OutBox findByIdOrThrow(Long eventId) {
         return outboxEventRepository.findById(eventId)
             .orElseThrow(() ->
                 new IllegalStateException(

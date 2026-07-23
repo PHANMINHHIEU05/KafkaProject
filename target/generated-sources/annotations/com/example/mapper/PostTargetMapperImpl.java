@@ -7,13 +7,12 @@ import com.example.entity.SocialAccount;
 import com.example.entity.enums.Platform;
 import com.example.entity.enums.PublishStatus;
 import java.time.Instant;
-import java.util.UUID;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-22T09:44:45+0700",
+    date = "2026-07-23T22:58:52+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.11 (Red Hat, Inc.)"
 )
 @Component
@@ -25,10 +24,10 @@ public class PostTargetMapperImpl implements PostTargetMapper {
             return null;
         }
 
-        UUID postId = null;
-        UUID socialAccountId = null;
+        Long postId = null;
+        Integer socialAccountId = null;
         String accountName = null;
-        UUID id = null;
+        Long id = null;
         Platform platform = null;
         PublishStatus status = null;
         String externalPostId = null;
@@ -71,7 +70,7 @@ public class PostTargetMapperImpl implements PostTargetMapper {
         return postTarget.build();
     }
 
-    private UUID postTargetPostId(PostTarget postTarget) {
+    private Long postTargetPostId(PostTarget postTarget) {
         if ( postTarget == null ) {
             return null;
         }
@@ -79,14 +78,14 @@ public class PostTargetMapperImpl implements PostTargetMapper {
         if ( post == null ) {
             return null;
         }
-        UUID id = post.getId();
+        Long id = post.getId();
         if ( id == null ) {
             return null;
         }
         return id;
     }
 
-    private UUID postTargetSocialAccountId(PostTarget postTarget) {
+    private Integer postTargetSocialAccountId(PostTarget postTarget) {
         if ( postTarget == null ) {
             return null;
         }
@@ -94,10 +93,7 @@ public class PostTargetMapperImpl implements PostTargetMapper {
         if ( socialAccount == null ) {
             return null;
         }
-        UUID id = socialAccount.getId();
-        if ( id == null ) {
-            return null;
-        }
+        int id = socialAccount.getId();
         return id;
     }
 

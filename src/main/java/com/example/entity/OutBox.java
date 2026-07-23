@@ -1,7 +1,6 @@
 package com.example.entity;
 
 import java.time.Instant;
-import java.util.UUID;
 
 import com.example.entity.enums.OutboxStatus;
 
@@ -12,6 +11,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -32,11 +33,15 @@ import tools.jackson.databind.JsonNode;
 @Builder
 public class OutBox {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY, optional = false)
+    @JoinColumn(name = "organization_id", nullable = false)
+    private Organization organization;
 
     @Column(name = "aggregate_id" , nullable = false)
-    private UUID aggregateId;
+    private Long aggregateId;
 
     @Column(name = "aggregate_type", nullable = false)
     private String aggregateType;
@@ -72,10 +77,14 @@ public class OutBox {
     @Column(name = "created_at" , nullable = false)
     private Instant createdAt;
 
+    @Column(name = "updated_at", nullable = false)
+    private Instant updatedAt;
+
     @PrePersist
     protected void prePersist() {
         Instant now = Instant.now();
         this.createdAt = this.createdAt == null ? now : this.createdAt;
+        this.updatedAt = now;
         this.availableAt = this.availableAt == null ? now : this.availableAt;
         this.retryCount = this.retryCount == null ? 0 : this.retryCount;
         this.maxRetry = this.maxRetry == null ? 10 : this.maxRetry;

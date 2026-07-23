@@ -34,6 +34,12 @@ public enum ErrorCode {
         "Yêu cầu tạo bài đăng đã tồn tại"
     ),
 
+    DUPLICATE_SOCIAL_ACCOUNT(
+        HttpStatus.CONFLICT,
+        "DUPLICATE_SOCIAL_ACCOUNT",
+        "Tài khoản mạng xã hội đã tồn tại"
+    ),
+
     INVALID_POST_STATUS(
         HttpStatus.BAD_REQUEST,
         "INVALID_POST_STATUS",
@@ -58,9 +64,59 @@ public enum ErrorCode {
         "Hệ thống xảy ra lỗi"
     ),
     DATA_INTEGRITY_VIOLATION(
-        HttpStatus.BAD_REQUEST,
+        HttpStatus.CONFLICT,
         "DATA_INTEGRITY_VIOLATION",
         "Dữ liệu vi phạm ràng buộc data base"
+    ),
+    FACEBOOK_TIMEOUT(
+        HttpStatus.GATEWAY_TIMEOUT,
+        "FACEBOOK_TIMEOUT",
+        "Facebook API bị timeout"
+    ),
+    FACEBOOK_SERVICE_UNAVAILABLE(
+        HttpStatus.SERVICE_UNAVAILABLE,
+        "FACEBOOK_SERVICE_UNAVAILABLE",
+        "Facebook API tạm thời không khả dụng"
+    ),
+    FACEBOOK_RATE_LIMIT(
+        HttpStatus.TOO_MANY_REQUESTS,
+        "FACEBOOK_RATE_LIMIT",
+        "Facebook API giới hạn số lượng request"
+    ),
+    FACEBOOK_BAD_REQUEST(
+        HttpStatus.BAD_REQUEST,
+        "FACEBOOK_BAD_REQUEST",
+        "Nội dung gửi lên Facebook không hợp lệ"
+    ),
+    FACEBOOK_UNAUTHORIZED(
+        HttpStatus.UNAUTHORIZED,
+        "FACEBOOK_UNAUTHORIZED",
+        "Access token Facebook không hợp lệ hoặc đã hết hạn"
+    ),
+    TIKTOK_TIMEOUT(
+        HttpStatus.GATEWAY_TIMEOUT,
+        "TIKTOK_TIMEOUT",
+        "TikTok API bị timeout"
+    ),
+    TIKTOK_SERVICE_UNAVAILABLE(
+        HttpStatus.SERVICE_UNAVAILABLE,
+        "TIKTOK_SERVICE_UNAVAILABLE",
+        "TikTok API tạm thời không khả dụng"
+    ),
+    TIKTOK_RATE_LIMIT(
+        HttpStatus.TOO_MANY_REQUESTS,
+        "TIKTOK_RATE_LIMIT",
+        "TikTok API giới hạn số lượng request"
+    ),
+    TIKTOK_BAD_REQUEST(
+        HttpStatus.BAD_REQUEST,
+        "TIKTOK_BAD_REQUEST",
+        "Nội dung gửi lên TikTok không hợp lệ"
+    ),
+    TIKTOK_UNAUTHORIZED(
+        HttpStatus.UNAUTHORIZED,
+        "TIKTOK_UNAUTHORIZED",
+        "Access token TikTok không hợp lệ hoặc đã hết hạn"
     );
 
     private final HttpStatus httpStatus;

@@ -1,7 +1,6 @@
 package com.example.entity;
 
 import java.time.Instant;
-import java.util.UUID;
 
 import com.example.entity.enums.Platform;
 import com.example.entity.enums.PublishStatus;
@@ -20,6 +19,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,19 +35,21 @@ import lombok.Setter;
 @Builder
 public class PostTarget {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "post_id" , nullable = false)
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "social_account_id" , nullable = false)
+    @JoinColumn(name = "social_channel_id" , nullable = false)
+    private SocialChannel socialChannel;
+
+    @Transient
     private SocialAccount socialAccount;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "platform" , nullable = false)
+    @Transient
     private Platform platform;
 
     @Enumerated(EnumType.STRING)
@@ -87,13 +89,26 @@ public class PostTarget {
         if (this.status == null) {
             this.status = PublishStatus.PENDING;
         }
-        if (this.platform == null && this.socialAccount != null) {
-            this.platform = this.socialAccount.getPlatform();
-        }
     }
 
     @PreUpdate
     protected void preUpdate() {
         this.updatedAt = Instant.now();
+    }
+
+    @Transient
+    public SocialAccount getSocialAccount() {
+        if (socialChannel != null) {
+            return socialChannel.getSocialAccount();
+        }
+        return socialAccount;
+    }
+
+    @Transient
+    public Platform getPlatform() {
+        if (socialChannel != null && socialChannel.getSocialAccount() != null) {
+            return socialChannel.getSocialAccount().getPlatform();
+        }
+        return platform;
     }
 }   

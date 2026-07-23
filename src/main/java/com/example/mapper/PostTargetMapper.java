@@ -19,6 +19,7 @@ public interface PostTargetMapper {
     @Mapping(target = "post", ignore = true)
     @Mapping(target = "socialAccount", source = "socialAccount")
     @Mapping(target = "platform", source = "socialAccount.platform")
+    @Mapping(target = "socialChannel", ignore = true)
     @Mapping(target = "status", expression = "java(com.example.entity.enums.PublishStatus.PENDING)")
     @Mapping(target = "idempotencyKey", expression = "java(java.util.UUID.randomUUID().toString())")
     @Mapping(target = "externalPostId", ignore = true)

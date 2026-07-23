@@ -1,0 +1,46 @@
+# Maven / Java build output
+target/
+*.class
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
+logs/
+
+# Environment / local config
+.env
+.env.*
+!.env.example
+application-local.yml
+application-local.yaml
+application-dev-local.yml
+application-dev-local.yaml
+
+# IDE / editor
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test / coverage output
+coverage/
+htmlcov/
+.jacoco/
+
+# Docker local overrides
+compose.override.yaml
+docker-compose.override.yml
+docker-compose.override.yaml
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~

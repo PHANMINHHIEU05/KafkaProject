@@ -3,11 +3,10 @@ package com.example.event;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 public record PublishRequestedEvent(
-    UUID postId,
-    UUID userId,
+    Long postId,
+    Integer userId,
     String title,
     String content,
     Instant scheduledAt,

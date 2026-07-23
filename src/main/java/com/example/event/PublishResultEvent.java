@@ -3,11 +3,10 @@ package com.example.event;
 import com.example.entity.enums.Platform;
 
 import java.time.Instant;
-import java.util.UUID;
 
 public record PublishResultEvent(
-    UUID postId,
-    UUID postTargetId,
+    Long postId,
+    Long postTargetId,
     Long publishAttemptId,
     Platform platform,
     boolean success,

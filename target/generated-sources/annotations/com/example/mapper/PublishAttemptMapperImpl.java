@@ -5,13 +5,12 @@ import com.example.entity.PostTarget;
 import com.example.entity.PublishAttempt;
 import com.example.entity.enums.AttemptStatus;
 import java.time.Instant;
-import java.util.UUID;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-22T09:44:45+0700",
+    date = "2026-07-23T22:58:51+0700",
     comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.11 (Red Hat, Inc.)"
 )
 @Component
@@ -23,7 +22,7 @@ public class PublishAttemptMapperImpl implements PublishAttemptMapper {
             return null;
         }
 
-        UUID postTargetId = null;
+        Long postTargetId = null;
         Long id = null;
         Integer attemptNumber = null;
         AttemptStatus status = null;
@@ -72,7 +71,7 @@ public class PublishAttemptMapperImpl implements PublishAttemptMapper {
         return publishAttempt.build();
     }
 
-    private UUID entityPostTargetId(PublishAttempt publishAttempt) {
+    private Long entityPostTargetId(PublishAttempt publishAttempt) {
         if ( publishAttempt == null ) {
             return null;
         }
@@ -80,7 +79,7 @@ public class PublishAttemptMapperImpl implements PublishAttemptMapper {
         if ( postTarget == null ) {
             return null;
         }
-        UUID id = postTarget.getId();
+        Long id = postTarget.getId();
         if ( id == null ) {
             return null;
         }

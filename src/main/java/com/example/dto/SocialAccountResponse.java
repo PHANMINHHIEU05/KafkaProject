@@ -5,13 +5,12 @@ import com.example.entity.enums.ConnectionStatus;
 import com.example.entity.enums.Platform;
 
 import java.time.Instant;
-import java.util.UUID;
 
 public record SocialAccountResponse(
 
-    UUID id,
+    Integer id,
 
-    UUID userId,
+    Integer userId,
 
     Platform platform,
 

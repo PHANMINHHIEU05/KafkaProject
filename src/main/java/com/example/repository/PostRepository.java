@@ -11,9 +11,8 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.Optional;
-import java.util.UUID;
 
-public interface PostRepository extends JpaRepository<Post, UUID> {
+public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("""
         SELECT p
@@ -22,8 +21,8 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
           AND p.user.id = :userId
     """)
     Optional<Post> findByIdAndUserId(
-        @Param("postId") UUID postId,
-        @Param("userId") UUID userId
+        @Param("postId") Long postId,
+        @Param("userId") Integer userId
     );
     @Query("""
         SELECT p
@@ -32,7 +31,7 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
           AND p.clientRequestId = :clientRequestId
     """)
     Optional<Post> findByUserIdAndClientRequestId(
-        @Param("userId") UUID userId,
+        @Param("userId") Integer userId,
         @Param("clientRequestId") String clientRequestId
     );
 
@@ -43,7 +42,7 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
           AND p.clientRequestId = :clientRequestId
     """)
     boolean existsByUserIdAndClientRequestId(
-        @Param("userId") UUID userId,
+        @Param("userId") Integer userId,
         @Param("clientRequestId") String clientRequestId
     );
 
@@ -55,7 +54,7 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
         ORDER BY p.createdAt DESC
     """)
     Page<Post> findAllByUserIdAndStatus(
-        @Param("userId") UUID userId,
+        @Param("userId") Integer userId,
         @Param("status") PostStatus status,
         Pageable pageable
     );
@@ -67,7 +66,7 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
         ORDER BY p.createdAt DESC
     """)
     Page<Post> findAllByUserId(
-        @Param("userId") UUID userId,
+        @Param("userId") Integer userId,
         Pageable pageable
     );
 
@@ -99,7 +98,7 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
         nativeQuery = true
     )
     int updateStatusIfCurrentStatus(
-        @Param("postId") UUID postId,
+        @Param("postId") Long postId,
         @Param("expectedStatus") String expectedStatus,
         @Param("newStatus") String newStatus,
         @Param("updatedAt") Instant updatedAt
@@ -127,8 +126,8 @@ public interface PostRepository extends JpaRepository<Post, UUID> {
         nativeQuery = true
     )
     int cancelPost(
-        @Param("postId") UUID postId,
-        @Param("userId") UUID userId,
+        @Param("postId") Long postId,
+        @Param("userId") Integer userId,
         @Param("updatedAt") Instant updatedAt
     );
 }

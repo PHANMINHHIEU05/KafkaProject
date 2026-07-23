@@ -1,8 +1,6 @@
 package com.example.entity;
 
 import java.time.Instant;
-import java.util.UUID;
-
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -21,6 +19,9 @@ public class AuditLog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) 
     private Long id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "actor_user_id") 
@@ -33,7 +34,7 @@ public class AuditLog {
     private String targetType; 
 
     @Column(name = "target_id")
-    private UUID targetId;
+    private Long targetId;
 
     @JdbcTypeCode(SqlTypes.JSON) // Map hoàn hảo với JSONB của PostgreSQL
     @Column(name = "old_value", columnDefinition = "jsonb")

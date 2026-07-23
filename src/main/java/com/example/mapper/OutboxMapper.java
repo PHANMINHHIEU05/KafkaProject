@@ -3,7 +3,6 @@ package com.example.mapper;
 import com.example.config.MapStructConfig;
 import com.example.entity.OutBox;
 import com.example.entity.Post;
-import com.example.entity.enums.OutboxStatus;
 import com.example.event.PublishRequestedEvent;
 import com.example.event.PublishResultEvent;
 import org.mapstruct.Context;

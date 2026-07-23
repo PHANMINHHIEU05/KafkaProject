@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +27,7 @@ public class PublishAttemptService {
      */
     @Transactional
     public PublishAttempt startAttempt(
-        UUID postTargetId,
+        Long postTargetId,
         Platform platform
     ) {
         PostTarget target = postTargetRepository
@@ -73,7 +72,7 @@ public class PublishAttemptService {
             publishAttemptMapper.toProcessingAttempt(
                 target,
                 lastAttemptNumber + 1,
-                UUID.randomUUID().toString()
+                java.util.UUID.randomUUID().toString()
             );
 
         /*

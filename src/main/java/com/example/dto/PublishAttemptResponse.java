@@ -2,12 +2,11 @@ package com.example.dto;
 
 import java.time.Instant;
 import com.example.entity.enums.AttemptStatus;
-import java.util.UUID;
 
 public record PublishAttemptResponse (
     Long id,
 
-    UUID postTargetId,
+    Long postTargetId,
 
     Integer attemptNumber,
 

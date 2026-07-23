@@ -1,7 +1,6 @@
 package com.example.repository;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.example.entity.SocialAccount;
 
-public interface SocialAccountRepository extends JpaRepository<SocialAccount, UUID> {
+public interface SocialAccountRepository extends JpaRepository<SocialAccount, Integer> {
     @Query(
         value = """
             SELECT *
@@ -20,7 +19,7 @@ public interface SocialAccountRepository extends JpaRepository<SocialAccount, UU
             """,
         nativeQuery = true
     )
-    List<SocialAccount> findActiveAccountsByIds(@Param("userId") UUID userId, @Param("accountIds") List<UUID> accountIds);
+    List<SocialAccount> findActiveAccountsByIds(@Param("userId") Integer userId, @Param("accountIds") List<Integer> accountIds);
 
     @Query(
         value = """
@@ -32,7 +31,7 @@ public interface SocialAccountRepository extends JpaRepository<SocialAccount, UU
             """,
         nativeQuery = true
     )
-    List<SocialAccount> findActiveAccountsByUserId(@Param("userId") UUID userId);
+    List<SocialAccount> findActiveAccountsByUserId(@Param("userId") Integer userId);
 
     @Query(
         value = """

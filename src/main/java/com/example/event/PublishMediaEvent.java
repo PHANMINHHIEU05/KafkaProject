@@ -1,9 +1,8 @@
 package com.example.event;
 
-import java.util.UUID;
 
 public record PublishMediaEvent(
-    UUID mediaId,
+    Long mediaId,
     Object mediaType,
     String mediaUrl,
     String mimeType,
