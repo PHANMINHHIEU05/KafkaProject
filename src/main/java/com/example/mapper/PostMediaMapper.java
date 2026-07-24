@@ -30,11 +30,11 @@ public interface PostMediaMapper {
         @MappingTarget PostMedia entity
     );
 
-    default com.example.entity.MediaAsset toMediaAssetReference(Long id) {
+    default com.example.media.entity.MediaAsset toMediaAssetReference(Long id) {
         if (id == null) {
             return null;
         }
-        com.example.entity.MediaAsset mediaAsset = new com.example.entity.MediaAsset();
+        com.example.media.entity.MediaAsset mediaAsset = new com.example.media.entity.MediaAsset();
         mediaAsset.setId(id);
         return mediaAsset;
     }

@@ -1,10 +1,16 @@
-package com.example.entity;
+package com.example.media.entity;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
+import com.example.entity.Organization;
+import com.example.entity.PostMedia;
+import com.example.entity.User;
 import com.example.entity.enums.MediaType;
 import com.example.entity.enums.MediaUploadStatus;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,6 +21,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -102,4 +109,7 @@ public class MediaAsset {
     void preUpdate() {
         this.updatedAt = Instant.now();
     }
+    @Builder.Default
+    @OneToMany(mappedBy = "mediaAsset", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PostMedia> postMedia = new ArrayList<>();
 }

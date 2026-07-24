@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.example.entity.MediaAsset;
 import com.example.entity.enums.MediaUploadStatus;
+import com.example.media.entity.MediaAsset;
 
 public interface MediaAssetRepository  extends JpaRepository<MediaAsset, Long> {
     @Query("""

@@ -3,6 +3,7 @@ package com.example.entity;
 import java.time.Instant;
 
 import com.example.entity.enums.MediaType;
+import com.example.media.entity.MediaAsset;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

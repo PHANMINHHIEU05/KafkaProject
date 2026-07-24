@@ -2,16 +2,16 @@ package com.example.mapper;
 
 import com.example.dto.CreatePostMediaRequest;
 import com.example.dto.PostMediaResponse;
-import com.example.entity.MediaAsset;
 import com.example.entity.PostMedia;
 import com.example.entity.enums.MediaType;
+import com.example.media.entity.MediaAsset;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-24T15:19:40+0700",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.11 (Red Hat, Inc.)"
+    date = "2026-07-24T17:29:47+0700",
+    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.46.100.v20260624-0231, environment: Java 21.0.11 (Eclipse Adoptium)"
 )
 @Component
 public class PostMediaMapperImpl implements PostMediaMapper {

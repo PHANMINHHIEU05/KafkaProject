@@ -19,6 +19,12 @@ public interface PostMediaRepository extends JpaRepository<PostMedia, Long> {
         nativeQuery = true
     )
     List<PostMedia> findAllByPostId(@Param("postId") Long postId);
-
-    
+    @Query(
+        """
+        SELECT count(*)
+        FROM PostMedia pm
+        WHERE pm.mediaAsset.id = :mediaAssetId
+                """
+    )
+    boolean existsByMediaAsset_Id(@Param("mediaAssetId") Long mediaAssetId);
 }
