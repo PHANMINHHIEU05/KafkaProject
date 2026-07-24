@@ -1,7 +1,8 @@
 package com.example.entity;
 
-import java.util.HashSet;
+
 import java.util.Set;
+import java.util.HashSet;
 
 import com.example.entity.enums.DepartmentStatus;
 
@@ -59,6 +60,6 @@ public class Department {
         this.updatedAt = java.time.Instant.now();
     }
     @Builder.Default
-    @OneToMany(mappedBy = "department",fetch = FetchType.LAZY)
-    private Set<DepartmentMember> departmentMembers = new HashSet<>();
+    @OneToMany(mappedBy = "department", fetch = FetchType.LAZY)
+    private Set<OrganizationMember> members = new HashSet<>();
 }

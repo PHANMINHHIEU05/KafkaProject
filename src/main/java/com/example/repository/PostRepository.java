@@ -130,4 +130,20 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         @Param("userId") Integer userId,
         @Param("updatedAt") Instant updatedAt
     );
+
+    @Query("""
+            SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END
+            FROM Post p
+            WHERE p.user.id = :userId 
+            AND p.organization.id = :orgId
+            AND p.clientRequestId = :clientRequestId
+            """)
+    boolean existsByOrgId(@Param("orgId") int orgId , @Param("userId") int userId , @Param("clientRequestId") String clientRequestId);
+    @Query("""
+            SELECT p
+            FROM Post p
+            WHERE p.id = :postId
+            AND p.organization.id = :orgId
+            """)
+    Optional<Post> findByIdAndOrganizationId(@Param("postId") Long postId , @Param("orgId") Integer orgId);
 }

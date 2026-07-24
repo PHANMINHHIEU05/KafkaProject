@@ -69,7 +69,4 @@ public class Organization {
     @Builder.Default
     @OneToMany(mappedBy = "organization")
     private Set<OrganizationMember> members = new HashSet<>();
-    @Builder.Default
-    @OneToMany(mappedBy = "organization")
-    private Set<DepartmentMember> departmentMembers = new HashSet<>();
 }

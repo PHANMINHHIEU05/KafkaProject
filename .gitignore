@@ -8,7 +8,7 @@ target/
 # Logs
 *.log
 logs/
-
+.env
 # Environment / local config
 .env
 .env.*

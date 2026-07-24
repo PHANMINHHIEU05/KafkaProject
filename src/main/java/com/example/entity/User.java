@@ -56,17 +56,12 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 20)
     private UserStatus status;
-
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
-
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SocialAccount> socialAccounts = new ArrayList<>();
-
-
     @PrePersist
     void prePersist() {
         Instant now = Instant.now();
@@ -76,16 +71,12 @@ public class User {
             this.status = UserStatus.ACTIVE;
         }
     }
-
-
     @PreUpdate
     void preUpdate() {
         this.updatedAt = Instant.now();
     }
-
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Post> posts = new ArrayList<>();
-
     @OneToMany(mappedBy = "actorUser", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AuditLog> auditLogs = new ArrayList<>();
     @OneToOne(mappedBy = "user", fetch = jakarta.persistence.FetchType.LAZY)

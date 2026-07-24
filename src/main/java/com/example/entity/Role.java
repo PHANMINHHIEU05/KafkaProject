@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,5 +53,10 @@ public class Role {
     )
     @Builder.Default
     private Set<OrganizationMember> organizationMembers = new HashSet<>();
-
+    @ManyToOne(fetch = FetchType.LAZY , optional = false)
+    @JoinColumn(name = "department_id", nullable = false)
+    private Department department;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "organization_id", nullable = false)
+    private Organization organization;
 }

@@ -139,4 +139,26 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(status).body(reponse);
     }
+    @ExceptionHandler(MediaValidationException.class)
+    public ResponseEntity<ErrorResponse> handleMediaValidationException(MediaValidationException ex, HttpServletRequest request) {
+        log.warn("Media validation error: {}, path: {}", ex.getMessage(), request.getRequestURI());
+        return buildErrorResponse(
+            HttpStatus.BAD_REQUEST,
+            ErrorCode.MEDIA_VALIDATION_ERROR.getCode(),
+            ex.getMessage(),
+            request,
+            null
+        );  
+    }
+    @ExceptionHandler(StorageException.class)
+    public ResponseEntity<ErrorResponse> handleStorageException(StorageException ex, HttpServletRequest request) {
+        log.error("Storage exception: {}, path: {}", ex.getMessage(), request.getRequestURI());
+        return buildErrorResponse(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            ErrorCode.STORAGE_ERROR.getCode(),
+            ex.getMessage(),
+            request,
+            null
+        );
+    }
 }

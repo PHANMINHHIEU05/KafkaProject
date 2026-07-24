@@ -117,6 +117,22 @@ public enum ErrorCode {
         HttpStatus.UNAUTHORIZED,
         "TIKTOK_UNAUTHORIZED",
         "Access token TikTok không hợp lệ hoặc đã hết hạn"
+    ), ROLES_NOT_FOUND(
+        HttpStatus.NOT_FOUND,
+        "ROLES_NOT_FOUND",
+        "Không tìm thấy vai trò"
+    ), DEPARTMENT_NOT_FOUND(
+        HttpStatus.NOT_FOUND,
+        "DEPARTMENT_NOT_FOUND",
+        "Không tìm thấy phòng ban"
+    ), MEDIA_VALIDATION_ERROR(
+        HttpStatus.BAD_REQUEST,
+        "MEDIA_VALIDATION_ERROR",
+        "Media không hợp lệ"
+    ), STORAGE_ERROR(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        "STORAGE_ERROR",
+        "Lỗi lưu trữ"
     );
 
     private final HttpStatus httpStatus;

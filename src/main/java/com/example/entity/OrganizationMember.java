@@ -15,7 +15,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -70,10 +69,9 @@ public class OrganizationMember {
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
     @Builder.Default
-    @OneToMany(mappedBy = "organizationMember", fetch = FetchType.LAZY)
-    private Set<DepartmentMember> departmentMembers = new HashSet<>();
-    @Builder.Default
     @ManyToMany(fetch = FetchType.LAZY , mappedBy = "organizationMembers")
     private Set<Role> roles = new HashSet<>();
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id", nullable = false)
+    private Department department;
 }
