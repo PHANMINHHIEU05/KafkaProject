@@ -6,6 +6,7 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/client/FacebookApiClient.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/client/PlatformPublishResult.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/client/TikTokApiClient.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/config/JacksonObjectMapperConfig.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/config/KafkaConsumerConfig.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/config/KafkaErrorHandlerConfig.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/config/MapStructConfig.java
@@ -23,6 +24,7 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/CreatePostMediaRequest.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/CreatePostRequest.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/CreateSocialAccountRequest.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/CurrentUserContextResponse.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/InnerDepartmentResponse.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/OrganizationResponse.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/PostMediaResponse.java
@@ -125,6 +127,7 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/security/SecurityConfig.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/security/SecurityCurrentUserProvider.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/service/AuthorizationService.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/service/CurrentUserContextService.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/service/DepartmentMemberService.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/service/DepartmentService.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/service/FacebookPublishService.java

@@ -53,6 +53,7 @@ public class MediaAssetServiceImpl implements MediaAssetService  {
     @Override
     @Transactional
     public  InitiateMediaUploadResponse initiateUpload(InitiateMediaUploadRequest request) {
+        authorizationService.requirePermission("MEDIA_UPLOAD");
         validateUploadRequest(request);
         OrganizationMember member = organizationMemberService.getCurrentMember();
         Integer organizationId = member.getOrganization().getId();
@@ -86,6 +87,7 @@ public class MediaAssetServiceImpl implements MediaAssetService  {
     @Override
     @Transactional
     public ConfirmMediaUploadResponse confirmUpload(Long mediaAssetId) {
+        authorizationService.requirePermission("MEDIA_UPLOAD");
         OrganizationMember member = organizationMemberService.getCurrentMember();
         MediaAsset mediaAsset = getMediaAssetOrThrow(
                 mediaAssetId,
@@ -112,6 +114,7 @@ public class MediaAssetServiceImpl implements MediaAssetService  {
     @Override
     @Transactional
     public MediaDownloadResponse createDownloadUrl(Long mediaAssetId) {
+        authorizationService.requirePermission("MEDIA_READ");
         OrganizationMember member = organizationMemberService.getCurrentMember();
         MediaAsset mediaAsset = getVisibleReadyMediaAsset(mediaAssetId, member);
         String downloadUrl = minioStorageService.createDownloadUrl(mediaAsset.getObjectKey());
@@ -135,6 +138,7 @@ public class MediaAssetServiceImpl implements MediaAssetService  {
     @Override
     @Transactional
     public void delete(Long mediaAssetId) {
+        authorizationService.requirePermission("MEDIA_DELETE");
         OrganizationMember member = organizationMemberService.getCurrentMember();
         MediaAsset mediaAsset = getMediaAssetOrThrow(mediaAssetId, member.getOrganization().getId() , member.getDepartment().getId());
         minioStorageService.deleteObject(mediaAsset.getObjectKey());

@@ -20,21 +20,25 @@ public class SocialAccountService {
     private final SocialAccountRepository socialAccountRepository;
     private final SocialAccountMapper socialAccountMapper;
     private final OrganizationMemberService organizationMemberService;
+    private final AuthorizationService authorizationService;
 
     public SocialAccountService(
         SocialAccountRepository socialAccountRepository,
         SocialAccountMapper socialAccountMapper,
-        OrganizationMemberService organizationMemberService
+        OrganizationMemberService organizationMemberService,
+        AuthorizationService authorizationService
     ) {
         this.socialAccountRepository = socialAccountRepository;
         this.socialAccountMapper = socialAccountMapper;
         this.organizationMemberService = organizationMemberService;
+        this.authorizationService = authorizationService;
     }
 
     @Transactional
     public SocialAccountResponse createSocialAccount(
         CreateSocialAccountRequest request
     ) {
+        authorizationService.requirePermission("SOCIAL_ACCOUNT_CONNECT");
         OrganizationMember currentMember = organizationMemberService.getCurrentMember();
         var user = currentMember.getUser();
 
@@ -60,6 +64,7 @@ public class SocialAccountService {
     }
 
     public List<SocialAccountResponse> findActiveAccounts() {
+        authorizationService.requirePermission("SOCIAL_ACCOUNT_READ");
         OrganizationMember currentMember = organizationMemberService.getCurrentMember();
 
         return socialAccountRepository.findActiveAccountsByOrgIdAndUserId(
@@ -71,6 +76,7 @@ public class SocialAccountService {
             .toList();
     }
     public void disconnectSocialAccount(Integer accountId) {
+        authorizationService.requirePermission("SOCIAL_ACCOUNT_DISCONNECT");
         OrganizationMember currentMember = organizationMemberService.getCurrentMember();
 
         var socialAccount = socialAccountRepository.findByIdAndOrgId(

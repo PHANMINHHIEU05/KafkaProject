@@ -8,7 +8,7 @@ import com.example.event.PublishResultEvent;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Mapper(config = MapStructConfig.class)
 public interface OutboxMapper {

@@ -1,5 +1,5 @@
-com/example/mapper/PostMapperImpl.class
 com/example/mapper/PublishAttemptMapperImpl.class
+com/example/mapper/PostMapperImpl.class
 com/example/auth/dto/LoginRequest.class
 com/example/client/TikTokApiClient.class
 com/example/entity/SocialChannel.class
@@ -58,6 +58,7 @@ com/example/dto/PostMediaResponse.class
 com/example/media/dto/ConfirmMediaUploadResponse.class
 com/example/entity/PostTarget$PostTargetBuilder.class
 com/example/mapper/OutboxMapperImpl.class
+com/example/dto/CurrentUserContextResponse$UserInfo.class
 com/example/entity/Post.class
 com/example/entity/Department.class
 com/example/media/service/MediaAssetService.class
@@ -85,6 +86,8 @@ com/example/mapper/PostTargetMapperImpl.class
 com/example/entity/Post$PostBuilder.class
 com/example/config/KafkaErrorHandlerConfig.class
 com/example/storage/MinioStorageServiceImpl.class
+com/example/dto/CurrentUserContextResponse$OrganizationInfo.class
+com/example/service/CurrentUserContextService.class
 com/example/mapper/SocialAccountMapperImpl.class
 com/example/dto/CreatePostMediaRequest.class
 com/example/entity/PublishAttempt.class
@@ -120,8 +123,11 @@ com/example/dto/AssignRoleRequest.class
 com/example/entity/PostMedia$PostMediaBuilder.class
 com/example/repository/UserRepository.class
 com/example/repository/PostTargetRepository.class
+com/example/dto/CurrentUserContextResponse$OrganizationMemberInfo.class
+com/example/dto/CurrentUserContextResponse$PermissionInfo.class
 com/example/repository/SocialAccountRepository.class
 com/example/entity/PostMedia.class
+com/example/dto/CurrentUserContextResponse$DepartmentInfo.class
 com/example/exception/ErrorCode.class
 com/example/service/FacebookPublishService.class
 com/example/media/entity/MediaType.class
@@ -154,6 +160,8 @@ com/example/media/repository/MediaAssetRepository.class
 com/example/service/TikTokPublishService.class
 com/example/entity/enums/AttemptStatus.class
 com/example/storage/MinioStorageService.class
+com/example/dto/CurrentUserContextResponse$RoleInfo.class
+com/example/dto/CurrentUserContextResponse.class
 com/example/client/PlatformPublishResult.class
 com/example/repository/OrganizationMemberRepository.class
 com/example/media/dto/MediaDownloadResponse.class
@@ -163,6 +171,7 @@ com/example/media/service/MediaAssetServiceImpl.class
 com/example/security/CustomUserDetailsService.class
 com/example/security/JwtAuthenticationFilter.class
 com/example/dto/CreateSocialAccountRequest.class
+com/example/config/JacksonObjectMapperConfig.class
 com/example/entity/OrganizationMember$OrganizationMemberBuilder.class
 com/example/entity/enums/SocialChannelType.class
 com/example/exception/BadRequestException.class

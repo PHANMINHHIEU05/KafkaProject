@@ -34,11 +34,13 @@ public class MediaAssetController {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(response);
     }
     @PostMapping("/{id}/confirm")
+    @PreAuthorize("hasAuthority('MEDIA_UPLOAD')")
     public ResponseEntity<ConfirmMediaUploadResponse> confirmUpload(@PathVariable Long id) {
         ConfirmMediaUploadResponse response = mediaAssetService.confirmUpload(id);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
     @GetMapping("/{id}/download-url")
+    @PreAuthorize("hasAuthority('MEDIA_READ')")
     public ResponseEntity<MediaDownloadResponse> getDownloadUrl(@PathVariable Long id) {
         MediaDownloadResponse downloadUrl = mediaAssetService.createDownloadUrl(id);
         return ResponseEntity.status(HttpStatus.OK).body(downloadUrl);

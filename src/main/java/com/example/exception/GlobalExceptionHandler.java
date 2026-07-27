@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -124,6 +125,21 @@ public class GlobalExceptionHandler {
             ErrorCode.AUTHENTICATION_FAILED.getHttpStatus(),
             ErrorCode.AUTHENTICATION_FAILED.getCode(),
             ErrorCode.AUTHENTICATION_FAILED.getMessage(),
+            request,
+            null
+        );
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(
+        AccessDeniedException ex,
+        HttpServletRequest request
+    ) {
+        log.warn("Access denied: path={}, message={}", request.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(
+            ErrorCode.ACCESS_DENIED.getHttpStatus(),
+            ErrorCode.ACCESS_DENIED.getCode(),
+            ErrorCode.ACCESS_DENIED.getMessage(),
             request,
             null
         );

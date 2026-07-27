@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import tools.jackson.databind.ObjectMapper; 
+import com.fasterxml.jackson.databind.ObjectMapper; 
 
 @Service
 @RequiredArgsConstructor

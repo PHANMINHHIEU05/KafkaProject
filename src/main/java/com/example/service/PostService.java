@@ -33,7 +33,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import tools.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.Instant;
 import java.util.LinkedHashSet;
@@ -55,6 +55,7 @@ public class PostService {
     private final OutboxService outboxService;
     private final OrganizationMemberService organizationMemberService;
     private final MediaAssetService mediaAssetService;
+    private final AuthorizationService authorizationService;
 
     private final PostMapper postMapper;
     private final PostMediaMapper postMediaMapper;
@@ -70,6 +71,8 @@ public class PostService {
     public PostResponse createPost(
         CreatePostRequest request
     ) {
+        authorizationService.requirePermission("POST_CREATE");
+        authorizationService.requirePermission("POST_PUBLISH");
         OrganizationMember currentMember = organizationMemberService.getCurrentMember();
         User user = currentMember.getUser();
 
@@ -120,6 +123,7 @@ public class PostService {
     public PostResponse getPostById(
         Long postId
     ) {
+        authorizationService.requirePermission("POST_READ");
         OrganizationMember currentMember = organizationMemberService.getCurrentMember();
 
         Post post = postRepository
@@ -145,6 +149,7 @@ public class PostService {
         PostStatus status,
         Pageable pageable
     ) {
+        authorizationService.requirePermission("POST_READ");
         OrganizationMember currentMember = organizationMemberService.getCurrentMember();
         Integer userId = currentMember.getUser().getId();
 
@@ -172,6 +177,7 @@ public class PostService {
     public PostResponse cancelPost(
         Long postId
     ) {
+        authorizationService.requirePermission("POST_CANCEL");
         OrganizationMember currentMember = organizationMemberService.getCurrentMember();
 
         Post post = postRepository

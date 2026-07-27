@@ -58,6 +58,12 @@ public enum ErrorCode {
         "Email hoặc mật khẩu không đúng"
     ),
 
+    ACCESS_DENIED(
+        HttpStatus.FORBIDDEN,
+        "ACCESS_DENIED",
+        "Bạn không có quyền thực hiện thao tác này"
+    ),
+
     API_NOT_FOUND(
         HttpStatus.NOT_FOUND,
         "API_NOT_FOUND",
