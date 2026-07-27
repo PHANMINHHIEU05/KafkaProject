@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-27T08:31:54+0700",
-    comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.46.100.v20260624-0231, environment: Java 21.0.11 (Eclipse Adoptium)"
+    date = "2026-07-27T11:20:33+0700",
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.11 (Red Hat, Inc.)"
 )
 @Component
 public class SocialAccountMapperImpl implements SocialAccountMapper {
@@ -59,9 +59,9 @@ public class SocialAccountMapperImpl implements SocialAccountMapper {
 
         SocialAccount.SocialAccountBuilder socialAccount = SocialAccount.builder();
 
+        socialAccount.platform( request.platform() );
         socialAccount.accountName( request.accountName() );
         socialAccount.externalAccountId( request.externalAccountId() );
-        socialAccount.platform( request.platform() );
 
         return socialAccount.build();
     }
@@ -72,9 +72,9 @@ public class SocialAccountMapperImpl implements SocialAccountMapper {
             return;
         }
 
+        entity.setPlatform( request.platform() );
         entity.setAccountName( request.accountName() );
         entity.setExternalAccountId( request.externalAccountId() );
-        entity.setPlatform( request.platform() );
     }
 
     private Integer socialAccountUserId(SocialAccount socialAccount) {

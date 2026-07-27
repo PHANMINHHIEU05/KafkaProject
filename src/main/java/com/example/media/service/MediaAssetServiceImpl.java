@@ -8,20 +8,24 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.config.minIO.MinioProperties;
 import com.example.entity.OrganizationMember;
-import com.example.entity.enums.MediaUploadStatus;
 import com.example.exception.MediaValidationException;
 import com.example.mapper.MediaAssetMapper;
 import com.example.media.dto.ConfirmMediaUploadResponse;
 import com.example.media.dto.InitiateMediaUploadRequest;
 import com.example.media.dto.InitiateMediaUploadResponse;
+import com.example.media.dto.MediaAssetResponse;
 import com.example.media.dto.MediaDownloadResponse;
 import com.example.media.entity.MediaAsset;
+import com.example.media.entity.MediaUploadStatus;
 import com.example.entity.enums.MediaType;
 import com.example.media.repository.MediaAssetRepository;
+import com.example.service.AuthorizationService;
 import com.example.service.OrganizationMemberService;
 import com.example.storage.MinioStorageService;
 import com.example.storage.StoredObjectMetadata;
@@ -32,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class MediaAssetServiceImpl implements MediaAssetService  {
+    private final AuthorizationService authorizationService;
     private static final Set<String> IMAGE_CONTENT_TYPES = Set.of("image/jpeg", "image/png", "image/gif");
     private static final Set<String> VIDEO_CONTENT_TYPES = Set.of(
             "video/mp4",
@@ -44,6 +49,7 @@ public class MediaAssetServiceImpl implements MediaAssetService  {
     private final MinioProperties minioProperties;
     private final MediaAssetMapper mediaAssetMapper;
 
+
     @Override
     @Transactional
     public  InitiateMediaUploadResponse initiateUpload(InitiateMediaUploadRequest request) {
@@ -55,6 +61,7 @@ public class MediaAssetServiceImpl implements MediaAssetService  {
         MediaAsset mediaAsset = mediaAssetMapper.toUploadingMediaAsset(
                 request,
                 member.getOrganization(),
+                member.getDepartment(),
                 member.getUser(),
                 minioProperties.bucket(),
                 objectKey,
@@ -106,12 +113,9 @@ public class MediaAssetServiceImpl implements MediaAssetService  {
             throw new MediaValidationException("Media asset chưa sẵn sàng để tải xuống: " + mediaAssetId);
         }
         String downloadUrl = minioStorageService.createDownloadUrl(mediaAsset.getObjectKey());
+        Instant expiresAt = Instant.now().plusSeconds(minioProperties.downloadUrlExpirySeconds());
 
-        return new MediaDownloadResponse(
-                mediaAsset.getId(),
-                downloadUrl,
-                Instant.now().plusSeconds(minioProperties.downloadUrlExpirySeconds())
-        );
+        return mediaAssetMapper.toDownloadResponse(mediaAsset, downloadUrl, expiresAt);
     }
 
     @Override
@@ -197,4 +201,83 @@ public class MediaAssetServiceImpl implements MediaAssetService  {
         return mediaAssetRepository.findByIdAndOrgId(mediaAssetId, organizationId)
                 .orElseThrow(() -> new MediaValidationException("Không tìm thấy media asset: " + mediaAssetId));
     }
+
+    @Transactional 
+    @Override
+    public Page<MediaAssetResponse> getMyMedia(Pageable pageable) {
+        authorizationService.requirePermission("MEDIA_READ");
+        OrganizationMember member = organizationMemberService.getCurrentMember();
+        Page<MediaAsset> mediaAssets = mediaAssetRepository.findAllByIdUpload(
+            member.getOrganization().getId(),
+            member.getUser().getId(),
+            MediaUploadStatus.DELETED,
+            pageable
+        );
+        return mediaAssets.map(mediaAssetMapper::toResponse);
+    }
+    @Override
+    @Transactional()
+    public Page<MediaAssetResponse> getVisibleMedia(
+            Pageable pageable
+    ) {
+        authorizationService.requirePermission(
+                "MEDIA_READ"
+        );
+
+        OrganizationMember member =
+                organizationMemberService.getCurrentMember();
+
+        Integer organizationId =
+                member.getOrganization().getId();
+
+        Integer departmentId =
+                member.getDepartment().getId();
+
+        Page<MediaAsset> mediaAssets;
+
+        if (authorizationService.hasPermission(
+                "MEDIA_READ_ORGANIZATION"
+        )) {
+            // Có quyền toàn tổ chức
+            mediaAssets = mediaAssetRepository
+                    .findAllOrgMedia(
+                            organizationId,
+                            MediaUploadStatus.READY,
+                            pageable
+                    );
+        } else {
+            // Chỉ được xem trong phòng ban
+            mediaAssets = mediaAssetRepository
+                    .findAllDepartmentMedia(
+                            organizationId,
+                            departmentId,
+                            MediaUploadStatus.READY,
+                            pageable
+                    );
+        }
+
+        return mediaAssets.map(mediaAssetMapper::toResponse);
+    }
+    @Override
+    @Transactional
+    public MediaAssetResponse getMediaAssetById(Long mediaAssetId) {
+        authorizationService.requirePermission("MEDIA_READ");
+        OrganizationMember member = organizationMemberService.getCurrentMember();
+        MediaAsset mediaAsset = mediaAssetRepository.findByMediaId(
+                        mediaAssetId,
+                        member.getOrganization().getId(),
+                        member.getDepartment().getId(),
+                        MediaUploadStatus.READY
+                )
+                .orElseThrow(() -> new MediaValidationException("Không tìm thấy media asset: " + mediaAssetId));
+        if (mediaAsset.getUploadStatus() != MediaUploadStatus.READY) {
+            throw new MediaValidationException("Media asset chưa sẵn sàng để xem: " + mediaAssetId);
+        }
+        if (!authorizationService.hasPermission("MEDIA_READ_ORGANIZATION")
+                && !mediaAsset.getDepartment().getId().equals(member.getDepartment().getId())) {
+            throw new MediaValidationException("Bạn không có quyền xem media asset này: " + mediaAssetId);      
+        }
+        return mediaAssetMapper.toResponse(mediaAsset);
+    }
+    
 }

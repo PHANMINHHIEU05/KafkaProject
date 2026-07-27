@@ -1,7 +1,6 @@
 package com.example.media.dto;
 
-import com.example.entity.enums.MediaUploadStatus;
-
+import com.example.media.entity.MediaUploadStatus;
 import java.time.Instant;
 
 public record ConfirmMediaUploadResponse(

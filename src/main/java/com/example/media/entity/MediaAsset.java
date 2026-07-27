@@ -4,11 +4,11 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.entity.Department;
 import com.example.entity.Organization;
 import com.example.entity.PostMedia;
 import com.example.entity.User;
 import com.example.entity.enums.MediaType;
-import com.example.entity.enums.MediaUploadStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -46,7 +46,7 @@ public class MediaAsset {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "organization_id", nullable = false)
     private Organization organization;
-
+    
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -78,23 +78,17 @@ public class MediaAsset {
 
     @Column(name = "checksum_sha256", length = 64)
     private String checksumSha256;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "upload_status", nullable = false, length = 30)
     private MediaUploadStatus uploadStatus;
-
     @Column(name = "confirmed_at")
     private Instant confirmedAt;
-
     @Column(name = "deleted_at")
     private Instant deletedAt;
-
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
-
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt;
-
     @PrePersist
     void prePersist() {
         Instant now = Instant.now();
@@ -104,7 +98,6 @@ public class MediaAsset {
             this.uploadStatus = MediaUploadStatus.UPLOADING;
         }
     }
-
     @PreUpdate
     void preUpdate() {
         this.updatedAt = Instant.now();
@@ -112,4 +105,7 @@ public class MediaAsset {
     @Builder.Default
     @OneToMany(mappedBy = "mediaAsset", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostMedia> postMedia = new ArrayList<>();
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "department_id", nullable = false)
+    private Department department;
 }

@@ -89,6 +89,7 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/dto/ConfirmMediaUploadResponse.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/dto/InitiateMediaUploadRequest.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/dto/InitiateMediaUploadResponse.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/dto/MediaAssetResponse.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/dto/MediaDownloadResponse.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/entity/MediaAsset.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/entity/MediaType.java
