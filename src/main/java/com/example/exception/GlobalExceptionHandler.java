@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -104,6 +106,24 @@ public class GlobalExceptionHandler {
             HttpStatus.BAD_REQUEST,
             ErrorCode.INVALID_REQUEST.getCode(),
             "JSON không hợp lệ hoặc sai kiểu dữ liệu. Nếu không hẹn giờ, hãy gửi scheduledAt là null không có dấu ngoặc kép.",
+            request,
+            null
+        );
+    }
+
+    @ExceptionHandler({
+        BadCredentialsException.class,
+        UsernameNotFoundException.class
+    })
+    public ResponseEntity<ErrorResponse> handleAuthenticationException(
+        Exception ex,
+        HttpServletRequest request
+    ) {
+        log.warn("Authentication failed: path={}, message={}", request.getRequestURI(), ex.getMessage());
+        return buildErrorResponse(
+            ErrorCode.AUTHENTICATION_FAILED.getHttpStatus(),
+            ErrorCode.AUTHENTICATION_FAILED.getCode(),
+            ErrorCode.AUTHENTICATION_FAILED.getMessage(),
             request,
             null
         );

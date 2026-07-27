@@ -1,5 +1,5 @@
-com/example/mapper/PostMapperImpl.class
 com/example/mapper/PublishAttemptMapperImpl.class
+com/example/mapper/PostMapperImpl.class
 com/example/auth/dto/LoginRequest.class
 com/example/client/TikTokApiClient.class
 com/example/entity/SocialChannel.class

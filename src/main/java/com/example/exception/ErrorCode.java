@@ -52,6 +52,12 @@ public enum ErrorCode {
         "Dữ liệu yêu cầu không hợp lệ"
     ),
 
+    AUTHENTICATION_FAILED(
+        HttpStatus.UNAUTHORIZED,
+        "AUTHENTICATION_FAILED",
+        "Email hoặc mật khẩu không đúng"
+    ),
+
     API_NOT_FOUND(
         HttpStatus.NOT_FOUND,
         "API_NOT_FOUND",
