@@ -274,7 +274,7 @@ public class MediaAssetServiceImpl implements MediaAssetService  {
             throw new MediaValidationException("Media asset chưa sẵn sàng để xem: " + mediaAssetId);
         }
         if (!authorizationService.hasPermission("MEDIA_READ_ORGANIZATION")
-                && !mediaAsset.getDepartment().getId().equals(member.getDepartment().getId())) {
+                && mediaAsset.getDepartment().getId() != member.getDepartment().getId()) {
             throw new MediaValidationException("Bạn không có quyền xem media asset này: " + mediaAssetId);      
         }
         return mediaAssetMapper.toResponse(mediaAsset);
