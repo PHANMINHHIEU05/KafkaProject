@@ -6,8 +6,6 @@ import com.example.exception.ApiException;
 import com.example.exception.ErrorCode;
 
 import org.springframework.stereotype.Component;
-
-import java.net.SocketTimeoutException;
 import java.util.UUID;
 
 @Component
@@ -27,8 +25,8 @@ public class FacebookApiClient {
 
         String responseBody = """
             {
-              "success": true,
-              "platform": "FACEBOOK"
+                "success": true,
+                "platform": "FACEBOOK"
             }
             """;
 

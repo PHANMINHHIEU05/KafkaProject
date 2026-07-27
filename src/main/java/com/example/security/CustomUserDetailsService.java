@@ -15,16 +15,12 @@ import com.example.entity.Role;
 import com.example.entity.enums.OrganizationMemStatus;
 import com.example.repository.OrganizationMemberRepository;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
     private final OrganizationMemberRepository organizationMemberRepository;
-
-    public CustomUserDetailsService(
-        OrganizationMemberRepository organizationMemberRepository
-    ) {
-        this.organizationMemberRepository = organizationMemberRepository;
-    }
-
     @Override
     public UserDetails loadUserByUsername(String email) {
         OrganizationMember member =
@@ -39,7 +35,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                     )
                 );
 
-        Set<SimpleGrantedAuthority> authorities = new LinkedHashSet<>();
+        Set<SimpleGrantedAuthority> authorities = new LinkedHashSet<>(); // dùng để đại diện cho quyền hạng , role cho người dùng
 
         for (Role role : member.getRoles()) {
             authorities.add(

@@ -11,36 +11,29 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import tools.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
+import tools.jackson.databind.ObjectMapper; 
 
 @Service
+@RequiredArgsConstructor
 public class JwtService {
     private static final String HMAC_ALGORITHM = "HmacSHA256";
 
     private final JwtProperties jwtProperties;
-    private final ObjectMapper objectMapper;
-
-    public JwtService(
-        JwtProperties jwtProperties,
-        ObjectMapper objectMapper
-    ) {
-        this.jwtProperties = jwtProperties;
-        this.objectMapper = objectMapper;
-    }
+    private final ObjectMapper objectMapper;  // thư viện biến thằng Object sang JSON và ngược lại 
 
     public String generateToken(String email) {
-        Instant now = Instant.now();
-        Instant expiresAt = now.plusSeconds(jwtProperties.expirationSeconds());
+    Instant expiresAt = Instant.now().plusSeconds(jwtProperties.expirationSeconds());
 
         return createToken(
             Map.of(
-                "alg", "HS256",
-                "typ", "JWT"
+                "alg", "HS256", // thuật toán băm 
+                "typ", "JWT" // loại token 
             ),
             Map.of(
                 "sub", email,
-                "iat", now.getEpochSecond(),
-                "exp", expiresAt.getEpochSecond()
+                "iat", Instant.now().getEpochSecond(),
+                "exp", expiresAt.getEpochSecond() // tính thời gian với mốc thời gian là 1970-01-01T00:00:00Z (UTC) và đơn vị là giây
             )
         );
     }

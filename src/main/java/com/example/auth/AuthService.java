@@ -12,25 +12,16 @@ import com.example.auth.dto.LoginRequest;
 import com.example.repository.UserRepository;
 import com.example.security.JwtService;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
-
-    public AuthService(
-        UserRepository userRepository,
-        PasswordEncoder passwordEncoder,
-        JwtService jwtService,
-        UserDetailsService userDetailsService
-    ) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
-    }
-
+    
     public AuthResponse login(LoginRequest request) {
         var user = userRepository.findByEmail(request.email())
             .orElseThrow(() ->
