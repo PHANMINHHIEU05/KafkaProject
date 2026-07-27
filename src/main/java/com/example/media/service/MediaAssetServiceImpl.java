@@ -22,7 +22,6 @@ import com.example.media.dto.MediaDownloadResponse;
 import com.example.media.entity.MediaAsset;
 import com.example.entity.enums.MediaType;
 import com.example.media.repository.MediaAssetRepository;
-import com.example.repository.PostMediaRepository;
 import com.example.service.OrganizationMemberService;
 import com.example.storage.MinioStorageService;
 import com.example.storage.StoredObjectMetadata;
@@ -40,7 +39,6 @@ public class MediaAssetServiceImpl implements MediaAssetService  {
             "video/x-msvideo"
     );
     private final MediaAssetRepository mediaAssetRepository;
-    private final PostMediaRepository postMediaRepository;
     private final OrganizationMemberService organizationMemberService;
     private final MinioStorageService minioStorageService;
     private final MinioProperties minioProperties;
