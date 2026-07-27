@@ -33,7 +33,7 @@ public interface PostMapper {
     // Media được tạo riêng bằng PostMediaMapper rồi add vào Post.
     @Mapping(target = "media", ignore = true)
 
-    // socialAccountIds không thể tự chuyển thành PostTarget.
+    // socialChannelIds không thể tự chuyển thành PostTarget.
     @Mapping(target = "targets", ignore = true)
     Post toEntity(CreatePostRequest request);
 

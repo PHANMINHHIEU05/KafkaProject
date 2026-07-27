@@ -3,10 +3,8 @@ package com.example.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.example.dto.CreateSocialAccountRequest;
@@ -17,9 +15,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 
-@Controller
+@RestController
 @RequestMapping("/api/social-account")
 @RequiredArgsConstructor
 public class SocialAccountController {
@@ -27,26 +26,22 @@ public class SocialAccountController {
     
     @PostMapping
     public ResponseEntity<SocialAccountResponse> createSocialAccount(
-        @RequestHeader("x-user-id") Integer userId,
         @RequestBody CreateSocialAccountRequest request
     ) {
-        SocialAccountResponse response = socialAccountService.createSocialAccount(userId, request);
+        SocialAccountResponse response = socialAccountService.createSocialAccount(request);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping
-    public ResponseEntity<List<SocialAccountResponse>> getSocialAccounts(
-        @RequestHeader("x-user-id") Integer userId
-    ) {
-        var response = socialAccountService.findActiveAccounts(userId);
+    public ResponseEntity<List<SocialAccountResponse>> getSocialAccounts() {
+        var response = socialAccountService.findActiveAccounts();
         return ResponseEntity.ok(response);
     }
     @PatchMapping
     public ResponseEntity<Void> disconnectSocialAccounts(
-        @RequestHeader("x-user-id") Integer userId,
         @RequestParam Integer accountIds
     ) {
-        socialAccountService.disconnectSocialAccount(userId, accountIds);
+        socialAccountService.disconnectSocialAccount(accountIds);
         return ResponseEntity.ok().build();
     }
 }

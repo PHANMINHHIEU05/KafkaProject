@@ -5,6 +5,9 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/config/KafkaConsumerConfig.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/config/KafkaErrorHandlerConfig.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/config/MapStructConfig.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/config/minIO/MinIOClient.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/config/minIO/MinioBucketInitializer.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/config/minIO/MinioProperties.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/controller/PostController.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/controller/SocialAccountController.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/AddOrganizationMemberRequest.java
@@ -25,7 +28,6 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/SocialAccountResponse.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/AuditLog.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/Department.java
-/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/MediaAsset.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/Organization.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/OrganizationMember.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/OutBox.java
@@ -68,7 +70,10 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/exception/ErrorCode.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/exception/ErrorResponse.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/exception/GlobalExceptionHandler.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/exception/MediaValidationException.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/exception/ResourceNotFoundException.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/exception/StorageException.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/MediaAssetMapper.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/OutboxMapper.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/PostMapper.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/PostMediaMapper.java
@@ -76,6 +81,17 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/PublishAttemptMapper.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/PublishEventMapper.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/SocialAccountMapper.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/controller/MediaAssetController.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/dto/ConfirmMediaUploadResponse.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/dto/InitiateMediaUploadRequest.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/dto/InitiateMediaUploadResponse.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/dto/MediaDownloadResponse.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/entity/MediaAsset.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/entity/MediaType.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/entity/MediaUploadStatus.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/repository/MediaAssetRepository.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/service/MediaAssetService.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/service/MediaAssetServiceImpl.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/messaging/consumer/DeadLetterConsumer.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/messaging/consumer/FacebookPublishConsumer.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/messaging/consumer/PublishResultConsumer.java
@@ -111,3 +127,6 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/service/SocialAccountService.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/service/TikTokPublishService.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/service/UserService.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/storage/MinioStorageService.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/storage/MinioStorageServiceImpl.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/storage/StoredObjectMetadata.java

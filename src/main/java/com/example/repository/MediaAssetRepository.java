@@ -1,6 +1,7 @@
 package com.example.repository;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,7 +15,9 @@ public interface MediaAssetRepository  extends JpaRepository<MediaAsset, Long> {
     @Query("""
             SELECT ma
             FROM MediaAsset ma
-            Where ma.id in :ids and ma.organization.id = :orgId and ma.status = :status
+            WHERE ma.id IN :ids
+              AND ma.organization.id = :orgId
+              AND ma.uploadStatus = :status
             """)
-    Optional<MediaAsset> findAll(@Param("ids") Collection<Long> ids, @Param("orgId") Integer orgId, @Param("status") MediaUploadStatus status);
+    List<MediaAsset> findAllReadyInOrg(@Param("ids") Collection<Long> ids, @Param("orgId") Integer orgId, @Param("status") MediaUploadStatus status);
 }

@@ -17,12 +17,12 @@ public interface MediaAssetRepository extends JpaRepository<MediaAsset, Long> {
             FROM MediaAsset m
             WHERE m.id = :id AND m.organization.id = :orgId
             """)
-    Optional<MediaAsset> findByIdAndOrgId(@Param("id") Long id, @Param("orgId") Long orgId);
+    Optional<MediaAsset> findByIdAndOrgId(@Param("id") Long id, @Param("orgId") Integer orgId);
     @Query("""
             SELECT m 
             FROM MediaAsset m
-            WHERE m.id IN :ids AND m.organization.id = :orgId AND m.status = :status
+            WHERE m.id IN :ids AND m.organization.id = :orgId AND m.uploadStatus = :status
             """)        
-    List<MediaAsset> findByOrgIdAndStatus(@Param("ids") Collection<Long> ids , @Param("orgId") Long orgId , @Param("status") MediaUploadStatus status);
+    List<MediaAsset> findByOrgIdAndStatus(@Param("ids") Collection<Long> ids , @Param("orgId") Integer orgId , @Param("status") MediaUploadStatus status);
     
 }

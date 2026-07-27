@@ -5,13 +5,16 @@ import com.example.dto.CreatePostRequest;
 import com.example.dto.PostResponse;
 import com.example.dto.PostSummaryResponse;
 import com.example.entity.OutBox;
+import com.example.entity.OrganizationMember;
 import com.example.entity.Post;
 import com.example.entity.PostMedia;
 import com.example.entity.PostTarget;
-import com.example.entity.SocialAccount;
+import com.example.entity.SocialChannel;
 import com.example.entity.User;
+import com.example.entity.enums.ConnectionStatus;
 import com.example.entity.enums.PostStatus;
 import com.example.entity.enums.PublishStatus;
+import com.example.entity.enums.SocialChannelStatus;
 import com.example.event.PublishRequestedEvent;
 import com.example.exception.BadRequestException;
 import com.example.exception.ConflictException;
@@ -23,8 +26,8 @@ import com.example.mapper.PostMediaMapper;
 import com.example.mapper.PostTargetMapper;
 import com.example.mapper.PublishEventMapper;
 import com.example.repository.PostRepository;
-import com.example.repository.SocialAccountRepository;
-import com.example.repository.UserRepository;
+import com.example.repository.SocialChannelRepository;
+import com.example.media.service.MediaAssetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,10 +50,11 @@ public class PostService {
     private static final String PUBLISH_REQUEST_EVENT_TYPE =
         "POST_PUBLISH_REQUESTED";
 
-    private final UserRepository userRepository;
-    private final SocialAccountRepository socialAccountRepository;
+    private final SocialChannelRepository socialChannelRepository;
     private final PostRepository postRepository;
     private final OutboxService outboxService;
+    private final OrganizationMemberService organizationMemberService;
+    private final MediaAssetService mediaAssetService;
 
     private final PostMapper postMapper;
     private final PostMediaMapper postMediaMapper;
@@ -64,26 +68,30 @@ public class PostService {
      */
     @Transactional
     public PostResponse createPost(
-        Integer userId,
         CreatePostRequest request
     ) {
-        User user = getUserOrThrow(userId);
+        OrganizationMember currentMember = organizationMemberService.getCurrentMember();
+        User user = currentMember.getUser();
 
         validateClientRequestId(
-            userId,
+            currentMember.getOrganization().getId(),
+            user.getId(),
             request.clientRequestId()
         );
 
-        List<Integer> accountIds =
-            normalizeAccountIds(request.socialAccountIds());
+        List<Integer> channelIds =
+            normalizeChannelIds(request.socialChannelIds());
 
-        List<SocialAccount> socialAccounts =
-            getValidSocialAccounts(userId, accountIds);
+        List<SocialChannel> socialChannels =
+            getValidSocialChannels(currentMember.getOrganization().getId(), channelIds);
+
+        validateMediaAssets(currentMember.getOrganization().getId(), request.mediaList());
 
         Post post = buildPost(
+            currentMember,
             user,
             request,
-            socialAccounts
+            socialChannels
         );
 
         /*
@@ -110,11 +118,12 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public PostResponse getPostById(
-        Integer userId,
         Long postId
     ) {
+        OrganizationMember currentMember = organizationMemberService.getCurrentMember();
+
         Post post = postRepository
-            .findByIdAndUserId(postId, userId)
+            .findByIdAndOrganizationId(postId, currentMember.getOrganization().getId())
             .orElseThrow(() ->
                 new ResourceNotFoundException(
                     ErrorCode.POST_NOT_FOUND,
@@ -133,21 +142,23 @@ public class PostService {
      */
     @Transactional(readOnly = true)
     public Page<PostSummaryResponse> getPosts(
-        Integer userId,
         PostStatus status,
         Pageable pageable
     ) {
-        getUserOrThrow(userId);
+        OrganizationMember currentMember = organizationMemberService.getCurrentMember();
+        Integer userId = currentMember.getUser().getId();
 
         Page<Post> posts;
 
         if (status == null) {
-            posts = postRepository.findAllByUserId(
+            posts = postRepository.findAllByOrgIdAndUserId(
+                currentMember.getOrganization().getId(),
                 userId,
                 pageable
             );
         } else {
-            posts = postRepository.findAllByUserIdAndStatus(
+            posts = postRepository.findAllByOrgIdAndUserIdAndStatus(
+                currentMember.getOrganization().getId(),
                 userId,
                 status,
                 pageable
@@ -159,11 +170,12 @@ public class PostService {
 
     @Transactional
     public PostResponse cancelPost(
-        Integer userId,
         Long postId
     ) {
+        OrganizationMember currentMember = organizationMemberService.getCurrentMember();
+
         Post post = postRepository
-            .findByIdAndUserId(postId, userId)
+            .findByIdAndOrganizationId(postId, currentMember.getOrganization().getId())
             .orElseThrow(() ->
                 new ResourceNotFoundException(
                     ErrorCode.POST_NOT_FOUND,
@@ -205,12 +217,15 @@ public class PostService {
      * Tạo Post cùng PostMedia và PostTarget.
      */
     private Post buildPost(
+        OrganizationMember currentMember,
         User user,
         CreatePostRequest request,
-        List<SocialAccount> socialAccounts
+        List<SocialChannel> socialChannels
     ) {
         Post post = postMapper.toEntity(request);
 
+        post.setOrganization(currentMember.getOrganization());
+        post.setDepartment(currentMember.getDepartment());
         post.setUser(user);
 
         if (request.scheduledAt() == null) {
@@ -221,7 +236,7 @@ public class PostService {
         }
 
         addMedia(post, request.mediaList());
-        addTargets(post, socialAccounts);
+        addTargets(post, socialChannels);
 
         return post;
     }
@@ -251,14 +266,14 @@ public class PostService {
     }
 
     /**
-     * Mỗi SocialAccount tạo một PostTarget.
+     * Mỗi SocialChannel tạo một PostTarget.
      */
     private void addTargets(
         Post post,
-        List<SocialAccount> socialAccounts
+        List<SocialChannel> socialChannels
     ) {
-        for (SocialAccount account : socialAccounts) {
-            PostTarget target = postTargetMapper.toEntity(account);
+        for (SocialChannel channel : socialChannels) {
+            PostTarget target = postTargetMapper.toEntity(channel);
 
             /*
              * addTarget phải đồng thời thực hiện:
@@ -269,20 +284,11 @@ public class PostService {
         }
     }
 
-    private User getUserOrThrow(Integer userId) {
-        return userRepository.findById(userId)
-            .orElseThrow(() ->
-                new ResourceNotFoundException(
-                    ErrorCode.USER_NOT_FOUND,
-                    "Không tìm thấy người dùng có id: " + userId
-                )
-            );
-    }
-
     /**
      * Chống việc client gửi lại cùng một request tạo bài.
      */
     private void validateClientRequestId(
+        Integer orgId,
         Integer userId,
         String clientRequestId
     ) {
@@ -292,7 +298,8 @@ public class PostService {
         }
 
         boolean existed =
-            postRepository.existsByUserIdAndClientRequestId(
+            postRepository.existsByOrgId(
+                orgId,
                 userId,
                 clientRequestId
             );
@@ -307,59 +314,89 @@ public class PostService {
     }
 
     /**
-     * Kiểm tra và loại bỏ socialAccountId bị trùng.
+     * Kiểm tra và loại bỏ socialChannelId bị trùng.
      */
-    private List<Integer> normalizeAccountIds(
-        List<Integer> socialAccountIds
+    private List<Integer> normalizeChannelIds(
+        List<Integer> socialChannelIds
     ) {
-        if (socialAccountIds == null
-            || socialAccountIds.isEmpty()) {
+        if (socialChannelIds == null
+            || socialChannelIds.isEmpty()) {
 
             throw new BadRequestException(
                 ErrorCode.INVALID_SOCIAL_ACCOUNT,
-                "Phải chọn ít nhất một tài khoản mạng xã hội"
+                "Phải chọn ít nhất một kênh đăng"
             );
         }
 
-        if (socialAccountIds.contains(null)) {
+        if (socialChannelIds.contains(null)) {
             throw new BadRequestException(
                 ErrorCode.INVALID_SOCIAL_ACCOUNT,
-                "socialAccountIds không được chứa giá trị null"
+                "socialChannelIds không được chứa giá trị null"
             );
         }
 
         Set<Integer> uniqueIds =
-            new LinkedHashSet<>(socialAccountIds);
+            new LinkedHashSet<>(socialChannelIds);
 
         return List.copyOf(uniqueIds);
     }
 
     /**
-     * Kiểm tra các tài khoản:
+     * Kiểm tra các kênh:
      * - tồn tại;
-     * - thuộc user;
+     * - thuộc organization hiện tại;
      * - đang có trạng thái hợp lệ để đăng bài.
      */
-    private List<SocialAccount> getValidSocialAccounts(
-        Integer userId,
-        List<Integer> accountIds
+    private List<SocialChannel> getValidSocialChannels(
+        Integer orgId,
+        List<Integer> channelIds
     ) {
-        List<SocialAccount> accounts =
-            socialAccountRepository.findActiveAccountsByIds(
-                userId,
-                accountIds
+        List<SocialChannel> channels =
+            socialChannelRepository.findPublishChannels(
+                channelIds,
+                orgId,
+                SocialChannelStatus.ACTIVE,
+                ConnectionStatus.CONNECTED
             );
 
-        if (accounts.size() != accountIds.size()) {
+        if (channels.size() != channelIds.size()) {
             throw new BadRequestException(
                 ErrorCode.INVALID_SOCIAL_ACCOUNT,
-                "Một hoặc nhiều tài khoản mạng xã hội "
-                    + "không tồn tại, không hoạt động "
-                    + "hoặc không thuộc người dùng"
+                "Một hoặc nhiều kênh đăng không tồn tại, không thuộc organization hoặc không thể publish"
             );
         }
 
-        return accounts;
+        return channels;
+    }
+
+    private void validateMediaAssets(
+        Integer orgId,
+        List<CreatePostMediaRequest> mediaRequests
+    ) {
+        if (mediaRequests == null || mediaRequests.isEmpty()) {
+            return;
+        }
+
+        List<Long> mediaAssetIds = mediaRequests.stream()
+            .map(CreatePostMediaRequest::mediaAssetId)
+            .toList();
+
+        if (mediaAssetIds.contains(null)) {
+            throw new BadRequestException(
+                ErrorCode.MEDIA_VALIDATION_ERROR,
+                "mediaAssetId không được chứa giá trị null"
+            );
+        }
+
+        long distinctCount = new LinkedHashSet<>(mediaAssetIds).size();
+        int readyCount = mediaAssetService.getReadyAssets(mediaAssetIds, orgId).size();
+
+        if (readyCount != distinctCount) {
+            throw new BadRequestException(
+                ErrorCode.MEDIA_VALIDATION_ERROR,
+                "Một hoặc nhiều media asset không tồn tại, chưa READY hoặc không thuộc organization"
+            );
+        }
     }
 
     /**

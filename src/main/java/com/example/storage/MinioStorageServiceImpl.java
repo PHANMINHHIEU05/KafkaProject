@@ -3,13 +3,14 @@ package com.example.storage;
 import org.springframework.stereotype.Service;
 
 import com.example.config.minIO.MinioProperties;
-import com.example.exception.ErrorCode;
 import com.example.exception.StorageException;
 
 import io.minio.BucketExistsArgs;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
+import io.minio.StatObjectArgs;
+import io.minio.StatObjectResponse;
 import io.minio.Http;
 import io.minio.errors.MinioException;
 import lombok.RequiredArgsConstructor;
@@ -65,7 +66,7 @@ public class MinioStorageServiceImpl implements MinioStorageService {
                 .method(Http.Method.GET)
                 .bucket(minioProperties.bucket())
                 .object(objectKey)
-                .expiry(minioProperties.uploadUrlExpirySeconds()) 
+                .expiry(minioProperties.downloadUrlExpirySeconds()) 
                 .build()
             );
             return url;
@@ -85,5 +86,32 @@ public class MinioStorageServiceImpl implements MinioStorageService {
         } catch(MinioException e){
             throw new StorageException("Error while deleting object: " + e.getMessage());
         }
-    }   
+    }
+    @Override
+    public StoredObjectMetadata startObject(String objectKey) {
+        try {
+            StatObjectResponse response =
+                    minioClient.statObject(
+                            StatObjectArgs.builder()
+                                    .bucket(
+                                            minioProperties.bucket()
+                                    )
+                                    .object(objectKey)
+                                    .build()
+                    );
+
+            return new StoredObjectMetadata(
+                    response.size(),
+                    response.etag(),
+                    response.versionId(),
+                    response.contentType()
+            );
+        } catch (MinioException exception) {
+            throw new StorageException(
+                    "Không tìm thấy object hoặc không thể đọc metadata: "
+                            + objectKey,
+                    exception
+            );
+        }
+    }
 }

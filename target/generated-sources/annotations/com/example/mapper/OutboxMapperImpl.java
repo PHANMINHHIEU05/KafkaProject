@@ -10,7 +10,7 @@ import tools.jackson.databind.ObjectMapper;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-24T17:05:49+0700",
+    date = "2026-07-27T01:23:00+0700",
     comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.46.100.v20260624-0231, environment: Java 21.0.11 (Eclipse Adoptium)"
 )
 @Component
@@ -25,9 +25,8 @@ public class OutboxMapperImpl implements OutboxMapper {
         OutBox.OutBoxBuilder outBox = OutBox.builder();
 
         if ( post != null ) {
-            outBox.aggregateId( post.getId() );
             outBox.organization( post.getOrganization() );
-            outBox.updatedAt( post.getUpdatedAt() );
+            outBox.aggregateId( post.getId() );
         }
         outBox.aggregateType( "POST" );
         outBox.eventType( "POST_PUBLISH_REQUESTED" );
@@ -43,15 +42,19 @@ public class OutboxMapperImpl implements OutboxMapper {
     }
 
     @Override
-    public OutBox toPublishResultOutbox(PublishResultEvent result, ObjectMapper objectMapper) {
-        if ( result == null ) {
+    public OutBox toPublishResultOutbox(Post post, PublishResultEvent result, ObjectMapper objectMapper) {
+        if ( post == null && result == null ) {
             return null;
         }
 
         OutBox.OutBoxBuilder outBox = OutBox.builder();
 
-        outBox.aggregateId( result.postId() );
-
+        if ( post != null ) {
+            outBox.organization( post.getOrganization() );
+        }
+        if ( result != null ) {
+            outBox.aggregateId( result.postId() );
+        }
         outBox.aggregateType( "POST" );
         outBox.eventType( "POST_PUBLISH_RESULT" );
         outBox.topic( "post-publish-results" );

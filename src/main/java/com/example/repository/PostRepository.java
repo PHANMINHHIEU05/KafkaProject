@@ -50,10 +50,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         SELECT p
         FROM Post p
         WHERE p.user.id = :userId
+          AND p.organization.id = :orgId
           AND (:status IS NULL OR p.status = :status)
         ORDER BY p.createdAt DESC
     """)
-    Page<Post> findAllByUserIdAndStatus(
+    Page<Post> findAllByOrgIdAndUserIdAndStatus(
+        @Param("orgId") Integer orgId,
         @Param("userId") Integer userId,
         @Param("status") PostStatus status,
         Pageable pageable
@@ -63,9 +65,11 @@ public interface PostRepository extends JpaRepository<Post, Long> {
         SELECT p
         FROM Post p
         WHERE p.user.id = :userId
+          AND p.organization.id = :orgId
         ORDER BY p.createdAt DESC
     """)
-    Page<Post> findAllByUserId(
+    Page<Post> findAllByOrgIdAndUserId(
+        @Param("orgId") Integer orgId,
         @Param("userId") Integer userId,
         Pageable pageable
     );
@@ -116,6 +120,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
                 version = version + 1
             WHERE id = :postId
               AND user_id = :userId
+              AND organization_id = :orgId
               AND status IN (
                   'DRAFT',
                   'SCHEDULED',
@@ -127,6 +132,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     )
     int cancelPost(
         @Param("postId") Long postId,
+        @Param("orgId") Integer orgId,
         @Param("userId") Integer userId,
         @Param("updatedAt") Instant updatedAt
     );

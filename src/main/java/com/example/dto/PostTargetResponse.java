@@ -11,6 +11,8 @@ public record PostTargetResponse(
 
     Long postId,
 
+    Integer socialChannelId,
+
     Integer socialAccountId,
 
     String accountName,

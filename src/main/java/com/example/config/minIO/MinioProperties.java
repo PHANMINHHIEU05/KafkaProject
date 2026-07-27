@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 @Validated
-@ConfigurationProperties(prefix = "minio")
+@ConfigurationProperties(prefix = "storage.minio")
 public record MinioProperties(
     @NotBlank
     String endpoint,

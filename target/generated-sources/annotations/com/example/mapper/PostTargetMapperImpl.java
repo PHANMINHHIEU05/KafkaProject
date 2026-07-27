@@ -4,6 +4,7 @@ import com.example.dto.PostTargetResponse;
 import com.example.entity.Post;
 import com.example.entity.PostTarget;
 import com.example.entity.SocialAccount;
+import com.example.entity.SocialChannel;
 import com.example.entity.enums.Platform;
 import com.example.entity.enums.PublishStatus;
 import java.time.Instant;
@@ -12,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-07-24T17:05:49+0700",
+    date = "2026-07-27T01:23:00+0700",
     comments = "version: 1.5.5.Final, compiler: Eclipse JDT (IDE) 3.46.100.v20260624-0231, environment: Java 21.0.11 (Eclipse Adoptium)"
 )
 @Component
@@ -25,6 +26,7 @@ public class PostTargetMapperImpl implements PostTargetMapper {
         }
 
         Long postId = null;
+        Integer socialChannelId = null;
         Integer socialAccountId = null;
         String accountName = null;
         Long id = null;
@@ -37,6 +39,7 @@ public class PostTargetMapperImpl implements PostTargetMapper {
         Instant publishedAt = null;
 
         postId = postTargetPostId( postTarget );
+        socialChannelId = postTargetSocialChannelId( postTarget );
         socialAccountId = postTargetSocialAccountId( postTarget );
         accountName = postTargetSocialAccountAccountName( postTarget );
         id = postTarget.getId();
@@ -48,21 +51,20 @@ public class PostTargetMapperImpl implements PostTargetMapper {
         processingStartedAt = postTarget.getProcessingStartedAt();
         publishedAt = postTarget.getPublishedAt();
 
-        PostTargetResponse postTargetResponse = new PostTargetResponse( id, postId, socialAccountId, accountName, platform, status, externalPostId, errorCode, errorMessage, processingStartedAt, publishedAt );
+        PostTargetResponse postTargetResponse = new PostTargetResponse( id, postId, socialChannelId, socialAccountId, accountName, platform, status, externalPostId, errorCode, errorMessage, processingStartedAt, publishedAt );
 
         return postTargetResponse;
     }
 
     @Override
-    public PostTarget toEntity(SocialAccount socialAccount) {
-        if ( socialAccount == null ) {
+    public PostTarget toEntity(SocialChannel socialChannel) {
+        if ( socialChannel == null ) {
             return null;
         }
 
         PostTarget.PostTargetBuilder postTarget = PostTarget.builder();
 
-        postTarget.socialAccount( socialAccount );
-        postTarget.platform( socialAccount.getPlatform() );
+        postTarget.socialChannel( socialChannel );
 
         postTarget.status( com.example.entity.enums.PublishStatus.PENDING );
         postTarget.idempotencyKey( java.util.UUID.randomUUID().toString() );
@@ -82,6 +84,18 @@ public class PostTargetMapperImpl implements PostTargetMapper {
         if ( id == null ) {
             return null;
         }
+        return id;
+    }
+
+    private Integer postTargetSocialChannelId(PostTarget postTarget) {
+        if ( postTarget == null ) {
+            return null;
+        }
+        SocialChannel socialChannel = postTarget.getSocialChannel();
+        if ( socialChannel == null ) {
+            return null;
+        }
+        int id = socialChannel.getId();
         return id;
     }
 

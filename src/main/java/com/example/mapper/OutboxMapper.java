@@ -14,6 +14,7 @@ import tools.jackson.databind.ObjectMapper;
 public interface OutboxMapper {
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "organization", source = "post.organization")
     @Mapping(target = "aggregateId", source = "post.id")
     @Mapping(target = "aggregateType", constant = "POST")
     @Mapping(target = "eventType", constant = "POST_PUBLISH_REQUESTED")
@@ -31,6 +32,7 @@ public interface OutboxMapper {
     @Mapping(target = "errorCode", ignore = true)
     @Mapping(target = "errorMessage", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     OutBox toPublishRequestedOutbox(
         Post post,
         PublishRequestedEvent event,
@@ -38,6 +40,7 @@ public interface OutboxMapper {
     );
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "organization", source = "post.organization")
     @Mapping(target = "aggregateId", source = "result.postId")
     @Mapping(target = "aggregateType", constant = "POST")
     @Mapping(target = "eventType", constant = "POST_PUBLISH_RESULT")
@@ -52,7 +55,9 @@ public interface OutboxMapper {
     @Mapping(target = "errorCode", ignore = true)
     @Mapping(target = "errorMessage", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     OutBox toPublishResultOutbox(
+        Post post,
         PublishResultEvent result,
         @Context ObjectMapper objectMapper
     );

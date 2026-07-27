@@ -11,8 +11,8 @@ public record CreatePostRequest(
     @Size(max = 1000 , message = "không quá 1000 kí tự")
     @NotBlank(message = "Nội dung không được để trống")
     String content,
-    @NotEmpty(message = "Danh sách media không được để trống")
-    List<Integer> socialAccountIds,
+    @NotEmpty(message = "Danh sách kênh đăng không được để trống")
+    List<Integer> socialChannelIds,
     List<CreatePostMediaRequest> mediaList,
     @NotEmpty
     String clientRequestId,

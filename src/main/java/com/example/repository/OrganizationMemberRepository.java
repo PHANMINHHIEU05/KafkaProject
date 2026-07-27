@@ -1,6 +1,7 @@
 package com.example.repository;
 
 import java.util.Optional;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,7 +30,7 @@ public interface OrganizationMemberRepository extends JpaRepository<Organization
             FROM OrganizationMember om
             WHERE om.organization.id = :organizationId
             """)
-    Optional<OrganizationMember> findByOrganizationId(@Param("organizationId") int organizationId);
+    List<OrganizationMember> findByOrganizationId(@Param("organizationId") int organizationId);
 
     @Query("""
             SELECT COUNT(om) > 0
@@ -37,4 +38,17 @@ public interface OrganizationMemberRepository extends JpaRepository<Organization
             WHERE om.user.id = :userId
             """)
     boolean existsByUser(@Param("userId") int userId);
+
+    @Query("""
+            SELECT om
+            FROM OrganizationMember om
+            WHERE om.organization.id = :organizationId
+              AND om.department.id = :departmentId
+              AND om.status = :status
+            """)
+    List<OrganizationMember> findByDepartmentInOrgAndStatus(
+            @Param("organizationId") Integer organizationId,
+            @Param("departmentId") Integer departmentId,
+            @Param("status") OrganizationMemStatus status
+    );
 }

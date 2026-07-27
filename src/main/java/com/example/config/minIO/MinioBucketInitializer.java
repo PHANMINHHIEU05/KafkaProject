@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import com.example.storage.MinioStorageService;
 
 import lombok.RequiredArgsConstructor;
+// tạo bucket khi ứng dụng khởi động
 @RequiredArgsConstructor
 @Component
 public class MinioBucketInitializer implements ApplicationRunner {

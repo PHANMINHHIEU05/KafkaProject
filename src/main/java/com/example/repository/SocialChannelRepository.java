@@ -1,7 +1,7 @@
 package com.example.repository;
 
 import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -13,13 +13,17 @@ import com.example.entity.enums.SocialChannelStatus;
 
 public interface SocialChannelRepository extends JpaRepository<SocialChannel, Integer> {
     @Query("""
-            SELECT 
+            SELECT sc
             FROM SocialChannel sc
-            JOIN FETCH sc.SocialAccount sa 
-            WHERE sc.id in :ids and
-            sa.organization.id = :orgId and sc.status = :status and sa.connectionStatus = :connectionStatus
+            JOIN FETCH sc.socialAccount sa
+            WHERE sc.id IN :ids
+              AND sa.organization.id = :orgId
+              AND sc.canPublish = true
+              AND sc.status = :status
+              AND sa.connectionStatus = :connectionStatus
+              AND sa.active = true
             """)
-    Optional<SocialChannel> findPublishChannels(
+    List<SocialChannel> findPublishChannels(
     @Param("ids") Collection<Integer> ids, 
     @Param("orgId") Integer orgId, 
     @Param("status") SocialChannelStatus status, 

@@ -27,8 +27,17 @@ public interface PostTargetRepository extends JpaRepository<PostTarget, Long> {
         value = """
             SELECT *
             FROM post_target
-            WHERE platform = CAST(:platform AS varchar)
-              AND status = CAST(:status AS varchar)
+            WHERE status = CAST(:status AS varchar)
+              AND social_channel_id IN (
+                  SELECT sc.id
+                  FROM social_channel sc
+                  JOIN social_account sa
+                    ON sa.id = sc.social_account_id
+                  WHERE sa.platform = CAST(:platform AS varchar)
+                    AND sa.active = true
+                    AND sc.can_publish = true
+                    AND sc.status = 'ACTIVE'
+              )
             ORDER BY created_at ASC
             LIMIT :limit
             """,
