@@ -23,21 +23,27 @@ public class AuthorizationService {
         .collect(java.util.stream.Collectors.toSet());
     }
 
+    @Transactional
     public boolean hasPermission(String permissionCode){
         Set<String> permissionCodes = getCurrentPermissionCodes();
         return permissionCodes.contains(permissionCode);
     }
 
+    @Transactional
     public void requirePermission(String permissionCode){
         if (!hasPermission(permissionCode)) {
             throw new AccessDeniedException("Insufficient permissions");
         }
     }
+
+    @Transactional
     public boolean hasRole(String roleName){
         OrganizationMember currentMember = organizationMemberService.getCurrentMember();
         return currentMember.getRoles().stream()
         .anyMatch(role -> role.getName().equals(roleName));
     }
+
+    @Transactional
     void requireRole(String roleName){
         if(!hasRole(roleName)){
             throw new AccessDeniedException("Insufficient role");

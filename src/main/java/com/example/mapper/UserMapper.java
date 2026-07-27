@@ -15,6 +15,8 @@ import com.example.entity.User;
         }
 )
 public interface UserMapper {
+    @Mapping(target = "socialAccounts", ignore = true)
+    @Mapping(target = "posts", ignore = true)
     @Mapping(target = "organizationMember", ignore = true)
     UserResponse toResponse(User user);
 }

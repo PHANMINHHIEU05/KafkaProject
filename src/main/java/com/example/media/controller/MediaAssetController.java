@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.example.mapper.MediaAssetMapper;
 import com.example.media.dto.ConfirmMediaUploadResponse;
 import com.example.media.dto.InitiateMediaUploadRequest;
 import com.example.media.dto.InitiateMediaUploadResponse;
@@ -29,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MediaAssetController {
     private final MediaAssetService mediaAssetService;
-    private final MediaAssetMapper mediaAssetMapper;
     @PostMapping("/uploads")
     @PreAuthorize("hasAuthority('MEDIA_UPLOAD')")
     public ResponseEntity<InitiateMediaUploadResponse> initiateUpload(@Valid @RequestBody InitiateMediaUploadRequest request) {

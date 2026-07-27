@@ -110,6 +110,7 @@ public class MediaAssetServiceImpl implements MediaAssetService  {
     }
 
     @Override
+    @Transactional
     public MediaDownloadResponse createDownloadUrl(Long mediaAssetId) {
         OrganizationMember member = organizationMemberService.getCurrentMember();
         MediaAsset mediaAsset = getVisibleReadyMediaAsset(mediaAssetId, member);

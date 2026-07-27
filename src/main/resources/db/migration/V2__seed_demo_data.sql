@@ -81,7 +81,7 @@ VALUES
         '0900000001',
         'admin@demo.local',
         NULL,
-        '$2a$10$1Y94R6ch.rt8x7Mw.Uv90uPnDNHAAB0HYAaJtVSTT3BLM/6ygjwBK',
+        '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
         'ACTIVE'
     ),
     (
@@ -91,7 +91,7 @@ VALUES
         '0900000002',
         'creator.marketing@demo.local',
         NULL,
-        '$2a$10$1Y94R6ch.rt8x7Mw.Uv90uPnDNHAAB0HYAaJtVSTT3BLM/6ygjwBK',
+        '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
         'ACTIVE'
     ),
     (
@@ -101,7 +101,7 @@ VALUES
         '0900000003',
         'viewer.marketing@demo.local',
         NULL,
-        '$2a$10$1Y94R6ch.rt8x7Mw.Uv90uPnDNHAAB0HYAaJtVSTT3BLM/6ygjwBK',
+        '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
         'ACTIVE'
     ),
     (
@@ -111,7 +111,7 @@ VALUES
         '0900000004',
         'viewer.sales@demo.local',
         NULL,
-        '$2a$10$1Y94R6ch.rt8x7Mw.Uv90uPnDNHAAB0HYAaJtVSTT3BLM/6ygjwBK',
+        '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
         'ACTIVE'
     )
 ON CONFLICT (email) DO UPDATE
