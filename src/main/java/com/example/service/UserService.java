@@ -33,7 +33,6 @@ public class UserService {
         User user = userRepository.findByEmail(email)
         .orElseThrow(() -> new ResourceNotFoundException(ErrorCode.USER_NOT_FOUND , "User with email " + email + " not found"));
         return user;
-
     }
 
 }

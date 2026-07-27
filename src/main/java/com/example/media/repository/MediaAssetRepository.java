@@ -17,9 +17,9 @@ public interface MediaAssetRepository extends JpaRepository<MediaAsset, Long> {
         @Query("""
                 SELECT m 
                 FROM MediaAsset m
-                WHERE m.id = :id AND m.organization.id = :orgId
+                WHERE m.id = :id AND m.organization.id = :orgId AND m.department.id = :departmentId
                 """)
-        Optional<MediaAsset> findByIdAndOrgId(@Param("id") Long id, @Param("orgId") Integer orgId);
+        Optional<MediaAsset> findByIdAndOrgId(@Param("id") Long id, @Param("orgId") Integer orgId , @Param("departmentId") Integer departmentId);
         @Query("""
                 SELECT m 
                 FROM MediaAsset m
@@ -65,13 +65,11 @@ public interface MediaAssetRepository extends JpaRepository<MediaAsset, Long> {
                 FROM MediaAsset m
                 WHERE m.id = :mediaAssetId
                 AND m.organization.id = :organizationId
-                AND m.department.id = :departmentId
                 AND m.uploadStatus = :uploadStatus
                         """)
         Optional<MediaAsset> findByMediaId(
         @Param("mediaAssetId") Long mediaAssetId,
         @Param("organizationId") Integer organizationId,
-        @Param("departmentId") Integer departmentId,
         @Param("uploadStatus") MediaUploadStatus uploadStatus
 );
 }

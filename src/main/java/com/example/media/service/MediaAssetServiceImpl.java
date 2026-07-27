@@ -87,7 +87,11 @@ public class MediaAssetServiceImpl implements MediaAssetService  {
     @Transactional
     public ConfirmMediaUploadResponse confirmUpload(Long mediaAssetId) {
         OrganizationMember member = organizationMemberService.getCurrentMember();
-        MediaAsset mediaAsset = getMediaAssetOrThrow(mediaAssetId, member.getOrganization().getId());
+        MediaAsset mediaAsset = getMediaAssetOrThrow(
+                mediaAssetId,
+                member.getOrganization().getId(),
+                member.getDepartment().getId()
+        );
         if (mediaAsset.getUploadStatus() == MediaUploadStatus.DELETED) {
             throw new MediaValidationException("Media asset đã bị xóa: " + mediaAssetId);
         }
@@ -108,10 +112,7 @@ public class MediaAssetServiceImpl implements MediaAssetService  {
     @Override
     public MediaDownloadResponse createDownloadUrl(Long mediaAssetId) {
         OrganizationMember member = organizationMemberService.getCurrentMember();
-        MediaAsset mediaAsset = getMediaAssetOrThrow(mediaAssetId, member.getOrganization().getId());
-        if (mediaAsset.getUploadStatus() != MediaUploadStatus.READY) {
-            throw new MediaValidationException("Media asset chưa sẵn sàng để tải xuống: " + mediaAssetId);
-        }
+        MediaAsset mediaAsset = getVisibleReadyMediaAsset(mediaAssetId, member);
         String downloadUrl = minioStorageService.createDownloadUrl(mediaAsset.getObjectKey());
         Instant expiresAt = Instant.now().plusSeconds(minioProperties.downloadUrlExpirySeconds());
 
@@ -134,7 +135,7 @@ public class MediaAssetServiceImpl implements MediaAssetService  {
     @Transactional
     public void delete(Long mediaAssetId) {
         OrganizationMember member = organizationMemberService.getCurrentMember();
-        MediaAsset mediaAsset = getMediaAssetOrThrow(mediaAssetId, member.getOrganization().getId());
+        MediaAsset mediaAsset = getMediaAssetOrThrow(mediaAssetId, member.getOrganization().getId() , member.getDepartment().getId());
         minioStorageService.deleteObject(mediaAsset.getObjectKey());
         mediaAsset.setUploadStatus(MediaUploadStatus.DELETED);
         mediaAsset.setDeletedAt(Instant.now());
@@ -197,9 +198,25 @@ public class MediaAssetServiceImpl implements MediaAssetService  {
         return value.trim();
     }
 
-    private MediaAsset getMediaAssetOrThrow(Long mediaAssetId, Integer organizationId) {
-        return mediaAssetRepository.findByIdAndOrgId(mediaAssetId, organizationId)
+    private MediaAsset getMediaAssetOrThrow(Long mediaAssetId, Integer organizationId , Integer departmentId) {
+        return mediaAssetRepository.findByIdAndOrgId(mediaAssetId, organizationId , departmentId)
                 .orElseThrow(() -> new MediaValidationException("Không tìm thấy media asset: " + mediaAssetId));
+    }
+
+    private MediaAsset getVisibleReadyMediaAsset(Long mediaAssetId, OrganizationMember member) {
+        MediaAsset mediaAsset = mediaAssetRepository.findByMediaId(
+                        mediaAssetId,
+                        member.getOrganization().getId(),
+                        MediaUploadStatus.READY
+                )
+                .orElseThrow(() -> new MediaValidationException("Không tìm thấy media asset: " + mediaAssetId));
+
+        if (!authorizationService.hasPermission("MEDIA_READ_ORGANIZATION")
+                && mediaAsset.getDepartment().getId() != member.getDepartment().getId()) {
+            throw new MediaValidationException("Bạn không có quyền xem media asset này: " + mediaAssetId);
+        }
+
+        return mediaAsset;
     }
 
     @Transactional 
@@ -263,20 +280,7 @@ public class MediaAssetServiceImpl implements MediaAssetService  {
     public MediaAssetResponse getMediaAssetById(Long mediaAssetId) {
         authorizationService.requirePermission("MEDIA_READ");
         OrganizationMember member = organizationMemberService.getCurrentMember();
-        MediaAsset mediaAsset = mediaAssetRepository.findByMediaId(
-                        mediaAssetId,
-                        member.getOrganization().getId(),
-                        member.getDepartment().getId(),
-                        MediaUploadStatus.READY
-                )
-                .orElseThrow(() -> new MediaValidationException("Không tìm thấy media asset: " + mediaAssetId));
-        if (mediaAsset.getUploadStatus() != MediaUploadStatus.READY) {
-            throw new MediaValidationException("Media asset chưa sẵn sàng để xem: " + mediaAssetId);
-        }
-        if (!authorizationService.hasPermission("MEDIA_READ_ORGANIZATION")
-                && mediaAsset.getDepartment().getId() != member.getDepartment().getId()) {
-            throw new MediaValidationException("Bạn không có quyền xem media asset này: " + mediaAssetId);      
-        }
+        MediaAsset mediaAsset = getVisibleReadyMediaAsset(mediaAssetId, member);
         return mediaAssetMapper.toResponse(mediaAsset);
     }
     

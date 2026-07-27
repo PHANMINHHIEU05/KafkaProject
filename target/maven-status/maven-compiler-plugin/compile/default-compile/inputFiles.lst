@@ -14,6 +14,7 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/config/minIO/MinioProperties.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/controller/PostController.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/controller/SocialAccountController.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/controller/UserController.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/AddOrganizationMemberRequest.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/AssignDepartmentRequest.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/AssignRoleRequest.java
@@ -30,6 +31,7 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/PostTargetResponse.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/PublishAttemptResponse.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/SocialAccountResponse.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/dto/UserResponse.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/AuditLog.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/Department.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/entity/Organization.java
@@ -85,6 +87,7 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/PublishAttemptMapper.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/PublishEventMapper.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/SocialAccountMapper.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/mapper/UserMapper.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/controller/MediaAssetController.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/dto/ConfirmMediaUploadResponse.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/media/dto/InitiateMediaUploadRequest.java
@@ -104,7 +107,6 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/messaging/publisher/OutboxPublisher.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/repository/AuditLogRepository.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/repository/DepartmentRepository.java
-/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/repository/MediaAssetRepository.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/repository/OrganizationMemberRepository.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/repository/OutboxEventRepository.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/repository/PostMediaRepository.java

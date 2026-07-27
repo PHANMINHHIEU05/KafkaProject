@@ -64,6 +64,7 @@ com/example/media/service/MediaAssetService.class
 com/example/repository/PostRepository.class
 com/example/media/entity/MediaAsset.class
 com/example/mapper/PostMapper.class
+com/example/controller/UserController.class
 com/example/entity/User.class
 com/example/repository/OutboxEventRepository.class
 com/example/auth/AuthController.class
@@ -108,6 +109,7 @@ com/example/entity/AuditLog$AuditLogBuilder.class
 com/example/dto/PostResponse.class
 com/example/exception/ConflictException.class
 com/example/dto/PostTargetResponse.class
+com/example/dto/UserResponse.class
 com/example/entity/SocialAccount$SocialAccountBuilder.class
 com/example/storage/StoredObjectMetadata.class
 com/example/dto/AssignDepartmentRequest.class
@@ -126,6 +128,7 @@ com/example/media/entity/MediaType.class
 com/example/entity/enums/MediaType.class
 com/example/exception/ApiException.class
 com/example/entity/Organization.class
+com/example/mapper/UserMapperImpl.class
 com/example/event/PublishResultEvent.class
 com/example/security/CurrentUserProvider.class
 com/example/media/entity/MediaUploadStatus.class
@@ -137,6 +140,7 @@ com/example/security/JwtService$MessageDigestHelper.class
 com/example/entity/Permission.class
 com/example/entity/enums/UserStatus.class
 com/example/mapper/PublishEventMapper.class
+com/example/mapper/UserMapper.class
 com/example/client/FacebookApiClient.class
 com/example/entity/enums/PermissionCode.class
 com/example/dto/PostSummaryResponse.class
@@ -146,7 +150,6 @@ com/example/mapper/PostTargetMapper.class
 com/example/event/PublishRequestedEvent.class
 com/example/service/RoleService.class
 com/example/service/PostService.class
-com/example/repository/MediaAssetRepository.class
 com/example/media/repository/MediaAssetRepository.class
 com/example/service/TikTokPublishService.class
 com/example/entity/enums/AttemptStatus.class
