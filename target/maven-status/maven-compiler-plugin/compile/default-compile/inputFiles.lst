@@ -1,4 +1,8 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/PostApplication.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/auth/AuthController.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/auth/AuthService.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/auth/dto/AuthResponse.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/auth/dto/LoginRequest.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/client/FacebookApiClient.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/client/PlatformPublishResult.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/client/TikTokApiClient.java
@@ -111,6 +115,11 @@
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/repository/SocialChannelRepository.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/repository/UserRepository.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/security/CurrentUserProvider.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/security/CustomUserDetailsService.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/security/JwtAuthenticationFilter.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/security/JwtProperties.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/security/JwtService.java
+/home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/security/SecurityConfig.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/security/SecurityCurrentUserProvider.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/service/AuthorizationService.java
 /home/hiubeo/Documents/code/KafkaProject/src/main/java/com/example/service/DepartmentMemberService.java

@@ -24,6 +24,20 @@ public interface OrganizationMemberRepository extends JpaRepository<Organization
             WHERE om.user.id = :userId AND om.status = :status
             """)
     Optional<OrganizationMember> findByUserIdAndStatus(@Param("userId") int userId, @Param("status") OrganizationMemStatus status);
+
+    @Query("""
+            SELECT DISTINCT om
+            FROM OrganizationMember om
+            JOIN FETCH om.user u
+            LEFT JOIN FETCH om.roles r
+            LEFT JOIN FETCH r.permissions
+            WHERE u.email = :email
+              AND om.status = :status
+            """)
+    Optional<OrganizationMember> findActiveByUserEmailWithRolesAndPermissions(
+            @Param("email") String email,
+            @Param("status") OrganizationMemStatus status
+    );
     
     @Query("""
             SELECT om

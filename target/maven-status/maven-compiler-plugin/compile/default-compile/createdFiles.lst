@@ -1,7 +1,14 @@
 com/example/client/TikTokApiClient.class
+com/example/mapper/PublishAttemptMapperImpl.class
+com/example/mapper/PostMapperImpl.class
 com/example/event/PublishMediaEvent.class
 com/example/event/PublishTargetEvent.class
+com/example/mapper/PostMediaMapperImpl.class
+com/example/mapper/PublishEventMapperImpl.class
+com/example/mapper/OutboxMapperImpl.class
+com/example/mapper/PostTargetMapperImpl.class
 com/example/config/KafkaErrorHandlerConfig.class
+com/example/mapper/SocialAccountMapperImpl.class
 com/example/entity/enums/Platform.class
 com/example/config/MapStructConfig.class
 com/example/PostApplication.class
