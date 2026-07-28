@@ -39,7 +39,6 @@ public class PublishResultOutboxService {
             result,
             objectMapper
         );
-
         return outboxService.save(event);
     }
 }

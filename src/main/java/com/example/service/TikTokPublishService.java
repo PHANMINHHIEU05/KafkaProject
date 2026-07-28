@@ -58,15 +58,12 @@ public class TikTokPublishService {
                     Platform.TIKTOK,
                     apiResult
                 );
-
             resultOutboxService.saveResult(resultEvent);
-
             log.info(
                 "TikTok publish thành công: postId={}, targetId={}",
                 event.postId(),
                 target.postTargetId()
             );
-
         } catch (Exception exception) {
             String errorMessage =
                 getErrorMessage(exception);

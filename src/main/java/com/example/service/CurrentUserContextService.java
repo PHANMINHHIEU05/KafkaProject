@@ -26,7 +26,7 @@ public class CurrentUserContextService {
     private final CurrentUserProvider currentUserProvider;
     private final OrganizationMemberRepository organizationMemberRepository;
 
-    @Transactional(readOnly = true)
+        @Transactional(readOnly = true)
     public CurrentUserContextResponse getCurrentUserContext() {
         String email = currentUserProvider.getCurrentUserEmail();
         OrganizationMember member = organizationMemberRepository
