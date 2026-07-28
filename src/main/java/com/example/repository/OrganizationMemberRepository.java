@@ -47,6 +47,20 @@ public interface OrganizationMemberRepository extends JpaRepository<Organization
         List<OrganizationMember> findByOrganizationId(@Param("organizationId") int organizationId);
 
         @Query("""
+                SELECT DISTINCT om
+                FROM OrganizationMember om
+                JOIN FETCH om.user u
+                JOIN FETCH om.department d
+                LEFT JOIN FETCH om.roles r
+                LEFT JOIN FETCH r.permissions p
+                WHERE om.organization.id = :organizationId
+                ORDER BY d.name ASC, u.email ASC
+                """)
+        List<OrganizationMember> findByOrganizationIdWithUserDepartmentRolesAndPermissions(
+                @Param("organizationId") int organizationId
+        );
+
+        @Query("""
                 SELECT COUNT(om) > 0
                 FROM OrganizationMember om
                 WHERE om.user.id = :userId

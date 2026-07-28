@@ -29,4 +29,14 @@ public interface SocialChannelRepository extends JpaRepository<SocialChannel, In
     @Param("status") SocialChannelStatus status, 
     @Param("connectionStatus") ConnectionStatus connectionStatus
     );
+
+    @Query("""
+            SELECT sc
+            FROM SocialChannel sc
+            JOIN FETCH sc.socialAccount sa
+            JOIN FETCH sa.user u
+            WHERE sa.organization.id = :orgId
+            ORDER BY sa.platform ASC, sc.channelName ASC
+            """)
+    List<SocialChannel> findByOrganizationIdWithAccount(@Param("orgId") Integer orgId);
 }

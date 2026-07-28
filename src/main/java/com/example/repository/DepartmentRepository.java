@@ -1,5 +1,7 @@
 package com.example.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,4 +23,12 @@ public interface DepartmentRepository extends JpaRepository<Department, Integer>
             WHERE d.id = :id AND d.organization.id = :orgId
             """)
     Department findByIdAndOrgId(@Param("id") Integer id, @Param("orgId") Integer orgId);
+
+    @Query("""
+            SELECT d
+            FROM Department d
+            WHERE d.organization.id = :orgId
+            ORDER BY d.name ASC
+            """)
+    List<Department> findByOrganizationIdOrderByName(@Param("orgId") Integer orgId);
 }
